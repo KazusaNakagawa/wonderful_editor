@@ -25,6 +25,7 @@ gem 'jbuilder', '~> 2.7'
 # List of gem to adopt
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'devise_token_auth'
+gem 'dotenv-rails'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
