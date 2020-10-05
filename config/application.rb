@@ -30,10 +30,21 @@ module WonderfulEditor
     # the framework and any gems in your application.
 
     config.generation do |g|
-      g.test_framwork :rspec
+      g.template_engine false
+      g.javascripts false
+      g.stylesheets false
+      g.helper false
+      g.test_framwork :rspec,
+                      view_specs: false,
+                      routing_specs: false,
+                      helper_specs: false,
+                      controller_specs: false,
+                      request_specs: true
     end
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    config.api_only = true
   end
 end
