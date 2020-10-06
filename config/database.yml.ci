@@ -1,0 +1,8 @@
+test:
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  database: daily-report-api_test
+  username: $POSTGRES_USER_WONDERFUL_EDITOR
+  password: $POSTGRES_PASSWORD_WONDERFUL_EDITOR
+  host: localhost
