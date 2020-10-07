@@ -21,6 +21,6 @@
 #
 require "rails_helper"
 
-RSpec.describe Comment, type: :model do
+RSpec.describe Comment, type: :model do # rubocop:disable RSpec/EmptyExampleGroup
   pending "add some examples to (or delete) #{__FILE__}"
 end
