@@ -41,6 +41,7 @@ group :development, :test do
   gem "pry-byebug"
   gem "pry-doc"
   gem "pry-rails"
+  gem "rails-erd"
   gem "rspec-rails", "~> 4.0.1"
   gem "rubocop-rails"
   gem "rubocop-rspec"
