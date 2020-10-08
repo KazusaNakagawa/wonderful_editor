@@ -19,6 +19,7 @@
 #
 class Article < ApplicationRecord
   belongs_to :user
+  validates :user, presence: true
 
   has_many :article_likes, dependent: :destroy
   has_many :comments, dependent: :destroy
