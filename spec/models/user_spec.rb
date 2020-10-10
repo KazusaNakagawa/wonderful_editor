@@ -10,21 +10,17 @@ RSpec.describe User, type: :model do
 
   context "password を指定していないとき" do
     it "ユーザー作成に失敗する" do
-      user = build(:user, password: nil)
-      aggregate_failures "最後まで通過" do
-        expect(user).to be_invalid
-        expect(user.errors.details[:password][0][:error]).to eq :blank
-      end
+      user = build(:user, password: nil)  
+      expect(user).to be_invalid
+      expect(user.errors.details[:password][0][:error]).to eq :blank
     end
   end
 
   context "email を指定していないとき" do
     it "ユーザー作成に失敗する" do
       user = build(:user, email: nil)
-      aggregate_failures "最後まで通過" do
-        expect(user).to be_invalid
-        expect(user.errors.details[:email][0][:error]).to eq :blank
-      end
+      expect(user).to be_invalid
+      expect(user.errors.details[:email][0][:error]).to eq :blank
     end
   end
 
@@ -39,13 +35,10 @@ RSpec.describe User, type: :model do
 
   context "すでに同じ email が存在しているとき" do
     before { create(:user, email: "foo@foo.xxx") }
-
     it "ユーザー作成に失敗する" do
       user = build(:user, email: "foo@foo.xxx")
-      aggregate_failures "最後まで通過" do
-        expect(user).to be_invalid
-        expect(user.errors.details[:email][0][:error]).to eq :taken
-      end
+      expect(user).to be_invalid
+      expect(user.errors.details[:email][0][:error]).to eq :taken
     end
   end
 end
