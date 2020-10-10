@@ -78,3 +78,6 @@ yarn-debug.log*
 
 # ER diagram
 erd.pdf
+
+# tested data
+data/
