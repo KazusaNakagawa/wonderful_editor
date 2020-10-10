@@ -11,7 +11,7 @@ RSpec.describe User, type: :model do
   context "password を指定していないとき" do
     it "ユーザー作成に失敗する", :aggregate_failures do
       user = build(:user, password: nil)
-      expect(user).to be_valid
+      expect(user).to be_invalid
       expect(user.errors.details[:password][0][:error]).to eq :blank
     end
   end
