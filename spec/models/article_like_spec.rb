@@ -20,6 +20,9 @@
 #
 require "rails_helper"
 
-RSpec.describe ArticleLike, type: :model do # rubocop:disable RSpec/EmptyExampleGroup
-  pending "add some examples to (or delete) #{__FILE__}"
+RSpec.describe ArticleLike, type: :model do
+  context "記事が存在している時" do
+    it "いいねをクリックできる" do
+    end
+  end
 end
