@@ -19,8 +19,9 @@
 #
 FactoryBot.define do
   factory :article do
-    title { "MyString" }
+    title { Faker::Lorem.characters(number: 10..50) }
     body { "MyText" }
-    user { nil }
+    # association :user, factory: :user の略
+    user
   end
 end
