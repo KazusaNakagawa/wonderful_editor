@@ -22,6 +22,7 @@ require "rails_helper"
 RSpec.describe Article, type: :model do
   context "titleがある時" do
     let(:article) { create(:article) }
+
     it "記事を投稿できる" do
       expect(article).to be_valid
     end
@@ -29,6 +30,7 @@ RSpec.describe Article, type: :model do
 
   context "title が 10文字より少ない時" do
     let(:article) { build(:article, title: "*" * 9) }
+
     it "記事の投稿に失敗する" do
       expect(article).to be_invalid
       expect(article.errors.details[:title][0][:error]).to eq :too_short
@@ -37,6 +39,7 @@ RSpec.describe Article, type: :model do
 
   context "title が 50文字より多い時" do
     let(:article) { build(:article, title: "*" * 51) }
+
     it "記事の投稿に失敗する" do
       expect(article).to be_invalid
       expect(article.errors.details[:title][0][:error]).to eq :too_long
@@ -45,6 +48,7 @@ RSpec.describe Article, type: :model do
 
   context "titleがない時" do
     let(:article) { build(:article, title: nil) }
+
     it "記事の投稿に失敗する" do
       expect(article).to be_invalid
       expect(article.errors.details[:title][0][:error]).to eq :blank

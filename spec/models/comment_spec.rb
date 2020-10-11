@@ -21,6 +21,14 @@
 #
 require "rails_helper"
 
-RSpec.describe Comment, type: :model do # rubocop:disable RSpec/EmptyExampleGroup
-  pending "add some examples to (or delete) #{__FILE__}"
+RSpec.describe Comment, type: :model do
+  context "記事が存在している時" do
+    it "コメントが、投稿できる" do
+    end
+  end
+
+  context "記事が存在していない時" do
+    it "コメントは、投稿できない" do
+    end
+  end
 end
