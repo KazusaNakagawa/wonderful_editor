@@ -15,7 +15,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
     it "記事一覧が表示できる" do
       # =begin
-      # >>> condole sample
+      # >>> console sample
       # いろいろ試す事ができる
 
       # res.map {|d| d["user"]["id"] }
