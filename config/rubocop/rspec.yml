@@ -22,7 +22,7 @@ RSpec/EmptyLineAfterFinalLet:
 # feature spec は exclude でも良いかもしれない。
 # ヒアドキュメント使うと一瞬で超えるので disable も検討。
 RSpec/ExampleLength:
-  Max: 8
+  Max: 9
 
 # block の方がテスト対象が
 # * `{}` の前後のスペースと相まって目立つ
