@@ -1,5 +1,8 @@
 require "rails_helper"
 
+# chart sheet
+# bundle exec rspec spec/requests/api/v1/articles_spec.rb --tag focus
+
 # type: request の test をするにで :requestとする
 RSpec.describe "Api::V1::Articles", type: :request do
   # test対象のurl
@@ -14,7 +17,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let!(:article3) { create(:article) }
 
     it "記事一覧が表示できる" do
-      # =begin
       # >>> console sample
       # いろいろ試す事ができる
 
@@ -53,8 +55,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
       #  "updated_at"=>"2020-10-16T21:54:00.962Z",
       #  "user"=>{"id"=>320, "name"=>"野村 彩乃", "email"=>"14_leopoldo_weber@parisian.com"}}
 
-      # =end
-
       subject
       res = JSON.parse(response.body)
       expect(response).to have_http_status(:ok)
@@ -62,6 +62,37 @@ RSpec.describe "Api::V1::Articles", type: :request do
       expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
       expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
       expect(res[0]["user"].keys).to eq ["id", "name", "email"]
+    end
+  end
+
+  describe "GET /articles/:id" do
+    subject { get(api_v1_article_path(article_id)) }
+
+    context "指定した id の記事が存在する場合" do
+      let(:article) { create(:article) }
+      let(:article_id) { article.id }
+
+      it "指定したid の記事を表示できる" do
+        subject
+        res = JSON.parse(response.body)
+
+        expect(response).to have_http_status(:ok)
+        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
+        expect(res["id"]).to eq article.id
+        expect(res["title"]).to eq article.title
+        expect(res["body"]).to eq article.body
+        expect(res["user_id"]).to eq article.user_id
+        # be_xxx: matcher
+        expect(res["updated_at"]).to be_present
+      end
+    end
+
+    context "指定した id の記事が存在しない場合" do
+      let(:article_id) { Article.last&.id.to_i + 1 }
+
+      it "指定したid の記事が表示できない" do
+        expect { subject }.to raise_error ActiveRecord::RecordNotFound
+      end
     end
   end
 end
