@@ -48,6 +48,7 @@ group :development, :test do
 
   # debug tool
   gem "debase"
+  gem "debase-ruby_core_source"
   gem "ruby-debug-ide"
 end
 

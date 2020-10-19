@@ -324,6 +324,7 @@ DEPENDENCIES
   annotate
   bootsnap (>= 1.4.2)
   debase
+  debase-ruby_core_source
   devise_token_auth
   dotenv-rails
   factory_bot_rails
