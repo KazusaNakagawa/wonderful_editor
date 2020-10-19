@@ -45,6 +45,10 @@ group :development, :test do
   gem "rspec-rails", "~> 4.0.1"
   gem "rubocop-rails"
   gem "rubocop-rspec"
+
+  # debug tool
+  gem "debase"
+  gem "ruby-debug-ide"
 end
 
 group :development do
