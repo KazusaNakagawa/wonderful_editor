@@ -1,7 +1,6 @@
 module Api::V1
   # base_api_controller を継承
   class ArticlesController < BaseApiController
-
     # CMD cheart sheet
     # $ bundle exec rails routes  | grep article
 
