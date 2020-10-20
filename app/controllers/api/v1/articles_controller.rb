@@ -1,6 +1,7 @@
 module Api::V1
   # base_api_controller を継承
   class ArticlesController < BaseApiController
+
     # CMD cheart sheet
     # $ bundle exec rails routes  | grep article
 
@@ -60,5 +61,38 @@ module Api::V1
       article = Article.find(params[:id])
       render json: article
     end
+
+    def create
+      # Postman:/ ExSample:
+      # POST: http://localhost:3000/api/v1/articles
+
+      # JSON ExSample
+      # {
+      #   "article": {
+      #       "title": "title-title-title", # validates ... length: { in: 10..50 }
+      #       "body": "body"
+      #   }
+      # }
+      # -----------------------------------------------------
+
+      # インスタンスを model から作成する
+      article = current_user.article.create!(article_params)
+
+      # 模範は articles. :... 何故??
+      # article = current_user.articles.create!(article_params)
+
+      # インスタンスを DB に保存する >>> なくてもDB保存される
+      # article.save!
+
+      # json として値を返す
+      render json: article
+    end
+
+    private
+
+      def article_params
+        # strong parameter
+        params.require(:article).permit(:title, :body)
+      end
   end
 end
