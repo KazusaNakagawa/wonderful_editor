@@ -6,7 +6,7 @@ require "rails_helper"
 # type: request の test をするにで :requestとする
 RSpec.describe "Api::V1::Articles", type: :request do
   # test対象のurl
-  describe "GET /article" do
+  describe "GET /articles" do
     # status 200 の確認　
     subject { get(api_v1_articles_path) }
 
