@@ -74,11 +74,18 @@ module Api::V1
       # }
       # -----------------------------------------------------
 
-      # インスタンスを model から作成する
-      article = current_user.article.create!(article_params)
+      # article = current_user.article.create!(article_params)
+      # >>> User >> has_many: article -> 複数系で書いてなかった
+      # >>>                   articles に修正
 
-      # 模範は articles. :... 何故??
-      # article = current_user.articles.create!(article_params)
+      # NoMethodError (undefined method `articles' for #<User:0x00007f9c7795c9d0>
+      #   Did you mean?  article
+      #                  article=):
+
+      #   app/controllers/api/v1/articles_controller.rb:81:in `create'
+
+      # インスタンスを model から作成する
+      article = current_user.articles.create!(article_params)
 
       # インスタンスを DB に保存する >>> なくてもDB保存される
       # article.save!

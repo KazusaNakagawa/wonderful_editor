@@ -36,11 +36,13 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
+
+  # TODO: gem: のこと??
   include DeviseTokenAuth::Concerns::User
   validates :name, :password, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 
-  has_many :article, dependent: :destroy
+  has_many :articles, dependent: :destroy
   has_many :article_likes, dependent: :destroy
   has_many :comments, dependent: :destroy
 end
