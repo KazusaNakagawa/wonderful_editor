@@ -155,20 +155,11 @@ RSpec.describe "Api::V1::Articles", type: :request do
         # allow(実装を置き換えたいオブジェクト).to receive(置き換えたいメソッド名).and_return(返却したい値やオブジェクト)
         #                                                      ↓ここで上書き　　　　　　　　↓ここは上で作った変数
         # allow(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub)
+
         # >>> 上手くいかない
-        # Failures:
-        #
-        # 1) Api::V1::Articles POST /articles login している user で記事を作成する時 記事が作成できる
-        #    Got 1 failure and 1 other error:
-        #
-        #    1.1) Failure/Error: # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+        #     1) Api::V1::Articles POST /articles login している user で記事を作成する時 記事が作成できる
         #           Api::V1::BaseApiController does not implement: current_user
-        #         # ./spec/requests/api/v1/articles_spec.rb:157:in `block (4 levels) in <main>'
-        #
-        #    1.2) Failure/Error:
-        #
-        #         NoMethodError:
-        #           undefined method `articles' for nil:NilClas
+        #     ./spec/requests/api/v1/articles_spec.rb:154:in `block (4 levels) in <main>'
       end
 
       it "記事が作成できる" do
