@@ -86,7 +86,6 @@ module Api::V1
 
       # インスタンスを model から作成する
       # create!: new, saveを同時にしている: １行で処理を済ませる時は良い
-      binding.pry
       article = current_user.articles.create!(article_params)
 
       # json として値を返す

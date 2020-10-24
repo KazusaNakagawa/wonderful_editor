@@ -12,6 +12,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
     # updated_at 引数設定は, descを確かめるため
     # この書き方はしない >>> let!(:article) { create_list(:article, 3) }
+    # let! =>配下より先に処理される
     let!(:article1) { create(:article, updated_at: 1.days.ago) }
     let!(:article2) { create(:article, updated_at: 2.days.ago) }
     let!(:article3) { create(:article) }
@@ -106,53 +107,84 @@ RSpec.describe "Api::V1::Articles", type: :request do
     # 2: 定義
     #   params: xxx
     #     xxx: >>> 送りたい値
+    # 記事を作成する動作を確認
     subject { post(api_v1_articles_path, params: params) }
 
     context "login している user で記事を作成する時" do
-
       # 3: subject から呼ばれる
-      #   ref: https://qiita.com/morrr/items/f1d3ac46b029ccddd017#db%E3%81%B8%E3%81%AE%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%85%8B%E3%82%92%E5%A4%89%E3%81%88%E3%81%A6%E7%94%9F%E6%88%90%E3%81%99%E3%82%8Bbuildbuild_stubbedcreateattributes_for
       #
+      # ref: https://qiita.com/morrr/items/f1d3ac46b029ccddd017#db%E3%81%B8%E3%81%AE%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%85%8B%E3%82%92%E5%A4%89%E3%81%88%E3%81%A6%E7%94%9F%E6%88%90%E3%81%99%E3%82%8Bbuildbuild_stubbedcreateattributes_for
       # attributes_for(:xxx) >>> FactoryBotで定義した :xxx をもとにパラメータを再生できる
       #   [2] pry(RSpec::ExampleGroups::ApiV1Articles::POSTArticles::LogInUser)
       #   > FactoryBot.attributes_for(:article)
-      #   => {:title=>"rehjdlj9l4fomuhpd4p2e4uzh2s31ok", :body=>"交錯済ます人口金。"}
-      #
+      #   => {
+      #       :title=>"rehjdlj9l4fomuhpd4p2e4uzh2s31ok",
+      #       :body=>"交錯済ます人口金。"
+      #     }
       # 3-1
       #   Api::V1::ArticlesController#article_params
       #   >> この中の params.reqire(:article)の :article を key として渡す
       let(:params) { { article: attributes_for(:article) } }
-      binding.pry
-      # 3-2
-      #   > current_user
-      #   => #<User id: 440, provider: "email", uid: "1_levi_schowalter@lakin.info", allow_password_change: false, \
-      #   name: "竹内 翔", image: nil, email: "1_levi_schowalter@lakin.info",
-      #   created_at: "2020-10-24 00:35:36", updated_at: "2020-10-24 00:35:36">
-      let(:current_user) { create(:user) }
 
+      # 3-2
+      # ExSample
+      #   > current_user
+      #   => #<User
+      #       id: 440,
+      #       provider: "email",
+      #       uid: "1_levi_schowalter@lakin.info",
+      #       allow_password_change: false,
+      #       name: "竹内 翔",
+      #       image: nil,
+      #       email: "1_levi_schowalter@lakin.info",
+      #       created_at: "2020-10-24 00:35:36",
+      #       updated_at: "2020-10-24 00:35:36">
+      # FactoyBotでuserを作成: 変数を currnt_user_stub
+      let!(:current_user_stub) { create(:user) }
 
       # stub: 外部APIに依存されないようにする
-      # allow().to receive(:twitter_client).and_return(current_user)
+      # before: 事前に処理するものをかく: 今回でいうとログインされたuserを装う
+      before do
+        # ここでcurrent_userメソッドが呼ばれたら上で作った:currrent_userを返すように実装を上書き
+        #
+        # ref: https://qiita.com/jnchito/items/640f17e124ab263a54dd#%E4%B8%80%E7%95%AA%E5%8D%98%E7%B4%94%E3%81%AA%E3%83%A2%E3%83%83%E3%82%AF%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9
 
+        # >>> allow_any_instance_of():　複数メソッドを扱いたい時
+        allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
 
-      fit "記事が作成できる" do
+        # allow(実装を置き換えたいオブジェクト).to receive(置き換えたいメソッド名).and_return(返却したい値やオブジェクト)
+        #                                                      ↓ここで上書き　　　　　　　　↓ここは上で作った変数
+        # allow(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub)
+        # >>> 上手くいかない
+        # Failures:
+        #
+        # 1) Api::V1::Articles POST /articles login している user で記事を作成する時 記事が作成できる
+        #    Got 1 failure and 1 other error:
+        #
+        #    1.1) Failure/Error: # before { allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user) }
+        #           Api::V1::BaseApiController does not implement: current_user
+        #         # ./spec/requests/api/v1/articles_spec.rb:157:in `block (4 levels) in <main>'
+        #
+        #    1.2) Failure/Error:
+        #
+        #         NoMethodError:
+        #           undefined method `articles' for nil:NilClas
+      end
+
+      it "記事が作成できる" do
         # 1:実際の処理
         expect { subject }.to change { Article.count }.by(1)
-        # expect { subject }.to change { User.count }.by(1)
-        binding.pry
-        # res = JSON.parse(response.body)
-        # binding.pry
-        # allow(current_user).to receive(:update)
-
-        # userがいない
-        #[1] pry(#<RSpec::ExampleGroups::ApiV1Articles::POSTArticles::LogInUser>)> params
-        # => {:title=>"803tkwz0hc9ngockjy4339bqdvqi66m5ko0j", :body=>"まほうつかいぶん脱税壮年。"}
+        res = JSON.parse(response.body)
+        expect(response).to have_http_status(:ok)
+        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
+        expect(res["user_id"]).to eq current_user_stub.id
+        expect(res["title"]).to eq params[:article][:title]
+        expect(res["body"]).to eq params[:article][:body]
       end
     end
 
     context "login していない user が記事作成する時" do
       it "記事が作成できない" do
-
       end
     end
   end
