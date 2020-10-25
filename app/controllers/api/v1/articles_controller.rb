@@ -12,10 +12,11 @@ module Api::V1
     #                  PUT    /api/v1/articles/:id(.:format)   api/v1/articles#update
     #                  DELETE /api/v1/articles/:id(.:format)   api/v1/articles#destroy
     #
-    # Postman:/ ExSample:
-    #   GET: http://localhost:3000/api/v1/articles.json
 
     def index
+      # """ 記事の一覧を表示 """
+      #  GET: http://localhost:3000/api/v1/articles.json
+      #
       # 試した事
       # 　配列で値が入っている
       # 　>>> )> articles
@@ -40,30 +41,31 @@ module Api::V1
     end
 
     def show
-      # Postman:/ ExSample:
+      # """ 記事の詳細をみる """
       #   GET: http://localhost:3000/api/v1/articles/2
       #
-      # pry(#<Api::V1::ArticlesController>))> params
-      # => <ActionController::Parameters {
-      #   "controller"=>"api/v1/articles", "action"=>"show", "id"=>"2"} permitted: false>
+      # ExSample:
+      #   pry(#<Api::V1::ArticlesController>))> params
+      #   => <ActionController::Parameters {
+      #     "controller"=>"api/v1/articles", "action"=>"show", "id"=>"2"} permitted: false>
       #
-      # pry(#<Api::V1::ArticlesController>)> article = Article.find(params[:id])
-      # Article Load (4.0ms)  SELECT "articles".* FROM "articles" WHERE "articles"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
-      # ↳ (pry):10:in `show'
-      # => #<Article:0x00007f820e9125c0
-      # id: 2,
-      # title: "test=test=test",
-      # body: "mytextbody",
-      # user_id: 5,
-      # created_at: Sat, 10 Oct 2020 13:16:09 UTC +00:00,
+      #   pry(#<Api::V1::ArticlesController>)> article = Article.find(params[:id])
+      #   Article Load (4.0ms)  SELECT "articles".* FROM "articles" WHERE "articles"."id" = $1 LIMIT $2  [["id", 2], ["LIMIT", 1]]
+      #   ↳ (pry):10:in `show'
+      #   => #<Article:0x00007f820e9125c0
+      #   id: 2,
+      #   title: "test=test=test",
+      #   body: "mytextbody",
+      #   user_id: 5,
+      #   created_at: Sat, 10 Oct 2020 13:16:09 UTC +00:00,
 
       article = Article.find(params[:id])
-      render json: article
+      render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
     def create
-      # Postman:/ ExSample:
-      # POST: http://localhost:3000/api/v1/articles
+      # """ 記事を作成する """
+      #   POST: http://localhost:3000/api/v1/articles
       #
       # JSON ExSample
       # {
@@ -92,10 +94,63 @@ module Api::V1
       render json: article
     end
 
+    def update
+      # """ 選択した記事を更新する """
+      #   PATCH/PUT: http://localhost:3000/api/v1/articles/4
+      #
+      # Exsample ----------------------------------------------
+      # user_id:2で, id:4 の記事を更新している。
+      #
+      # --- Send ---
+      # Postman:/ ExSample:
+      # {
+      #   "article": {
+      #     "title": "titil chenge ----------",
+      #     "body": "change body ----"
+      #   }
+      # }
+      # --- Response ---
+      # {
+      #   "user_id": 2,
+      #   "id": 4,
+      #   "title": "titil chenge ----------",
+      #   "body": "change body ----",
+      #   "created_at": "2020-10-20T13:42:44.892Z",
+      #   "updated_at": "2020-10-25T06:40:52.971Z"
+      # }
+      # -------------------------------------------------------
+
+      # 対象レコードを探す
+      article = current_user.articles.find(params[:id])
+
+      # 対象レコードを更新する
+      article.update!(article_params)
+
+      # 更新した値を json で返す
+      render json: article
+    end
+
+    def destroy
+      # """ 選択した記事を削除する  """
+      #   DELETE http://localhost:3000/api/v1/articles/< article num >
+      # ExSample: User.first を使用している
+
+      # TODO：レコードがない時の処理
+      # 対象レコードを探す
+      article = current_user.articles.find(params[:id])
+
+      # 記事を削除する
+      article.destroy!
+
+      # 更新した値を json で返す
+      # render json: article
+    end
+
     private
 
       def article_params
-        # strong parameter
+        # """ strong parameter """
+        # 引数に修正可能な column を指定する
         params.require(:article).permit(:title, :body)
       end
   end
