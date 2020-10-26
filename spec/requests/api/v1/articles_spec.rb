@@ -113,7 +113,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     context "login している user で記事を作成する時" do
       # 3: subject から呼ばれる
       #
-      # ref: https://qiita.com/morrr/items/f1d3ac46b029ccddd017#db%E3%81%B8%E3%81%AE%E4%BF%9D%E5%AD%98%E7%8A%B6%E6%85%8B%E3%82%92%E5%A4%89%E3%81%88%E3%81%A6%E7%94%9F%E6%88%90%E3%81%99%E3%82%8Bbuildbuild_stubbedcreateattributes_for
       # attributes_for(:xxx) >>> FactoryBotで定義した :xxx をもとにパラメータを再生できる
       #   [2] pry(RSpec::ExampleGroups::ApiV1Articles::POSTArticles::LogInUser)
       #   > FactoryBot.attributes_for(:article)
@@ -146,10 +145,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
       # before: 事前に処理するものをかく: 今回でいうとログインされたuserを装う
       before do
         # ここでcurrent_userメソッドが呼ばれたら上で作った:currrent_userを返すように実装を上書き
-        #
-        # ref: https://qiita.com/jnchito/items/640f17e124ab263a54dd#%E4%B8%80%E7%95%AA%E5%8D%98%E7%B4%94%E3%81%AA%E3%83%A2%E3%83%83%E3%82%AF%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9
 
-        # >>> allow_any_instance_of():　複数メソッドを扱いたい時
         allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
 
         # allow(実装を置き換えたいオブジェクト).to receive(置き換えたいメソッド名).and_return(返却したい値やオブジェクト)
@@ -174,9 +170,67 @@ RSpec.describe "Api::V1::Articles", type: :request do
       end
     end
 
-    context "login していない user が記事作成する時" do
-      it "記事が作成できない" do
+    # TODO: 検証保留 2020/10/25
+    context "login していない user が記事作成しようとする時" do
+      it "do Error" do
       end
+    end
+  end
+
+  describe "PATCH /api/v1/articles/:id" do
+    # 定義
+    # 1.article_id: 記事No >>> params を探す
+    subject { patch(api_v1_article_path(article.id), params: params) }
+
+    # ここから　-----------------------------------------------
+    # 2.paramsの定義 >>> articleを探す
+    let(:params) { { article: attributes_for(:article) } }
+
+    # 3.articleの定義 >>> currnt_user_stubを探す
+    let(:article) { create(:article, user: current_user_stub) }
+
+    # 4.user生成
+    let(:current_user_stub) { create(:user) }
+
+    # 5.stub ログインしたUserを擬似的に生成 >>> currnt_user とする
+    before do
+      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
+    end
+    # ここまで　-----------------------------------------------
+
+    context "ログインしたuserが自身の記事を更新しようとする時" do
+      # 記事のtitle, bodyを更新
+      it "更新できる" do
+        # X を A から B に
+        # expect { subject }.to change { X }.from(A).to(B)
+        # subjectは1回のみしか呼べない?? >>> 1回呼び出されたら、キャッシュが効いているから
+        #
+        # どちらの記述も同じ値が返ってくる??　謎
+        # artcle.title        : >> "title-title" -> String
+        # artcle.reload.title : >> "title-title" -> String
+        # reload: この記述にすることで 記事のデータを DB から再取得すると
+        expect { subject }.to change { article.reload.title }.from(article.title).to(params[:article][:title]) &
+                              change { article.reload.body }.from(article.body).to(params[:article][:body])
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "ログインしたuserが他人の記事を更新しようとした時" do
+      # user生成
+      let(:other_user) { create(:user) }
+      # 先呼び出ししないとErrorする recode数の確認のところでerrorはく
+      let!(:article) { create(:article, user: other_user) }
+
+      it "更新出来ない" do
+        # Error, recode数に変化ないことを確認している
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
+                              change { Article.count }.by(0)
+      end
+    end
+  end
+
+  describe "DELETE /articles/:id" do
+    it "指定したレコードを削除できる" do
     end
   end
 end
