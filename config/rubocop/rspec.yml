@@ -71,3 +71,7 @@ RSpec/NestedGroups:
 # ブロックの方が見た目がスッキリして見やすいので、どちらでもお好きにどうぞ。
 RSpec/ReturnFromStub:
   Enabled: false
+
+# context ごとに let! を使い分けたい場合があるため無効に
+RSpec/LetSetup:
+  Enabled: false
