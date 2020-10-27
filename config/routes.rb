@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root to: "home#index"
+
   # TODO: ここが "api", "v1" では無い訳??
   namespace :api do
     namespace :v1 do
