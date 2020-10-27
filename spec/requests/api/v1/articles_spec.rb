@@ -186,9 +186,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     # 2.paramsの定義 >>> articleを探す
     let(:params) { { article: attributes_for(:article) } }
 
-    # 3.articleの定義 >>> currnt_user_stubを探す
-    let(:article) { create(:article, user: current_user_stub) }
-
     # 4.user生成
     let(:current_user_stub) { create(:user) }
 
@@ -199,7 +196,9 @@ RSpec.describe "Api::V1::Articles", type: :request do
     # ここまで　-----------------------------------------------
 
     context "ログインしたuserが自身の記事を更新しようとする時" do
-      # 記事のtitle, bodyを更新
+      # articleの定義 >>> currnt_user_stubを探す
+      let(:article) { create(:article, user: current_user_stub) }
+
       it "更新できる" do
         # X を A から B に
         # expect { subject }.to change { X }.from(A).to(B)
@@ -230,7 +229,38 @@ RSpec.describe "Api::V1::Articles", type: :request do
   end
 
   describe "DELETE /articles/:id" do
-    it "指定したレコードを削除できる" do
+    # 定義
+    subject { delete(api_v1_article_path(article_id)) }
+
+    let(:current_user_stub) { create(:user) }
+    let(:article_id) { article.id }
+
+    # stub ログインしたUserを擬似的に生成 >>> currnt_user とする
+    before do
+      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
+    end
+
+    context "ログインしたuserが自身の記事を削除しようとする時" do
+      # ログインしたuserで記事作成
+      let!(:article) { create(:article, user: current_user_stub) }
+
+      it "削除できる" do
+        expect { subject }.to change { Article.count }.by(-1)
+        # 204 No Content
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+
+    context "ログインしたuserが他のuserの記事を削除しようとする時" do
+      # ログインしたuserで記事作成
+      let(:other_user) { create(:user) }
+      # 先呼び出ししないとErrorする recode数の確認のところでerrorはく
+      let!(:article) { create(:article, user: other_user) }
+
+      it "削除できない" do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
+                              change { Article.count }.by(0)
+      end
     end
   end
 end
