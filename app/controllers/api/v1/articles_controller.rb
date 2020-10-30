@@ -27,13 +27,6 @@ module Api::V1
       #   　user_id: 214,
       #   　created_at: Wed, 14 Oct 2020 22:46:32 UTC +00:00,
       #   　updated_at: Wed, 14 Oct 2020 22:46:32 UTC +00:00>,
-      # 　#<Article:0x00007f837ec4b590
-      #   　id: 106,
-      #   　title: "fpwf2mes22u3bte9ulknepp2j8x",
-      #   　body: "MyText",
-      #   　user_id: 212,
-      #   　created_at: Wed, 14 Oct 2020 22:46:31 UTC +00:00,
-      #   　updated_at: Tue, 13 Oct 2020 22:46:30 UTC +00:00>,]
 
       # 降順 sort: :desc
       articles = Article.order(updated_at: :desc)
