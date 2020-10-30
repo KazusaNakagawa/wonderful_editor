@@ -6,7 +6,7 @@
 Things you may want to cover:
 
 * version
-  - ruby  2.7.1
+  - ruby  2.7.2
   - Rails 6.0.3.3
 
 * System dependencies
