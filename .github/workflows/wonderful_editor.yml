@@ -14,10 +14,10 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
-      - name: Setup Ruby 2.7.1
+      - name: Setup Ruby 2.7.2
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.7.1
+          ruby-version: 2.7.2
       - name: Setup bundler
         run: gem install bundler
       - name: Cache gems
