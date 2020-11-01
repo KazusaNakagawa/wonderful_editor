@@ -1,5 +1,4 @@
 class Api::V1::Auth::RegistrationsController < ApplicationController
-
   def create
     # """転送されてきたデータを登録処理する """
     user = User.new(user_params)
