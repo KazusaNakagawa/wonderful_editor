@@ -30,7 +30,6 @@ class Api::V1::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsCon
       #         "updated_at": "2020-11-03T03:33:40.019Z"
       #      }
       #   }
-
       params.permit(:name, :email, :password, :password_confirmation)
     end
 
