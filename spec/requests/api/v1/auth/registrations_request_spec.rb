@@ -6,19 +6,19 @@ RSpec.describe "Api::V1::Auth::Registrations", type: :request do
   describe "POST /api/v1/auth" do
     subject { post(api_v1_user_registration_path, params: params) }
 
-    context "新規登録 response header 情報が正しい時" do
+    context "新規登録 response header 情報が確認できた時" do
       # """ 正確な header 情報（トークン）のレスポンスを確認する """
 
       let(:params) { attributes_for(:user) }
 
-      # 新規登録画面に必要な情報を入力して返ってきた情報の一部
-      let(:token) { response.headers["access-token"] }
-      let(:uid) { response.headers["uid"] }
-
       it "新規登録ができる" do
         subject
-        expect(token).not_to be_nil
-        expect(uid).to eq params[:email]
+        header = response.header
+        expect(header["access-token"]).to be_present
+        expect(header["token-type"]).to be_present
+        expect(header["client"]).to be_present
+        expect(header["expiry"]).to be_present
+        expect(header["uid"]).to eq params[:email]
         expect(response).to have_http_status(:ok)
       end
     end
