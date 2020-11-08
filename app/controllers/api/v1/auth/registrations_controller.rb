@@ -5,7 +5,7 @@ class Api::V1::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsCon
       # """転送されてきたデータを認証し登録する
       # passの値が合わないと認証が, 弾かれる
       # """
-      #
+      # URL: POST / http://localhost:3000/api/v1/auth/
       # Exsample
       #   request ----------------------------
       #   {
