@@ -2,7 +2,7 @@ require "rails_helper"
 
 # $ bundle exec rspec spec/requests/api/v1/auth/sessions_request_spec.rb --tag focus
 RSpec.describe "Api::V1::Auth::Sessions", type: :request do
-  describe "POST /api/v1/auth/:id" do
+  describe "POST /api/v1/auth/sgin_in" do
     subject { post(api_v1_user_session_path, params: params) }
 
     context "登録してるアカウントでログインする時" do
@@ -10,6 +10,8 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
 
       it "login success" do
         subject
+        # res = response.heade
+        # binding.pry
       end
     end
 

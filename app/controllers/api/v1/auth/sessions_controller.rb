@@ -1,24 +1,18 @@
 class Api::V1::Auth::SessionsController < DeviseTokenAuth::SessionsController
-  # def sign_in_params
-  #   params.permit(:email, :password)
-  # end
+  # skip_before_action :authenticate_user!, only: [:create, :destroy]
+  skip_before_action :verify_authenticity_token
+  # protect_from_forgery with: :null_session
 
-  def create
-    params.permit(:email, :password)
-    render json: current_user
-  end
+  # client_id = request.headers['client']
 
-  # protected
+  protected
 
-  #   def valid_params?(key, val)
-  #     # resource_params[:name] && key && val
-  #     resource_params[:email] && key && val
-  #     # params.permit(:email, :password)
-  #   end
+    def valid_params?(key, val)
+      # binding.pry
+      params[:session] && key && val
+      # params.permit(:email, :password, :session)
 
-  private
-
-    def resource_params
-      params.permit(:password, :login)
+      # origin -----------------
+      # resource_params[:password] && key && val
     end
 end
