@@ -15,7 +15,6 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
         header = response.header
         expect(header["access-token"]).to be_present
         expect(header["client"]).to be_present
-        expect(header["expiry"]).to be_present
         expect(header["uid"]).to eq user.email
         expect(response).to have_http_status(:ok)
       end
@@ -30,10 +29,9 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
         res = JSON.parse(response.body)
         expect(res["errors"][0]).to eq "Invalid login credentials. Please try again."
         header = response.header
-        expect(header["access-token"]).not_to be_present
-        expect(header["client"]).not_to be_present
-        expect(header["expiry"]).not_to be_present
-        expect(header["uid"]).not_to eq be_present
+        expect(header["access-token"]).to be_blank
+        expect(header["client"]).to be_blank
+        expect(header["uid"]).to be_blank
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -47,10 +45,9 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
         res = JSON.parse(response.body)
         expect(res["errors"][0]).to eq "Invalid login credentials. Please try again."
         header = response.header
-        expect(header["access-token"]).not_to be_present
-        expect(header["client"]).not_to be_present
-        expect(header["expiry"]).not_to be_present
-        expect(header["uid"]).not_to eq be_present
+        expect(header["access-token"]).to be_blank
+        expect(header["client"]).to be_blank
+        expect(header["uid"]).to be_blank
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -64,10 +61,9 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
         res = JSON.parse(response.body)
         expect(res["errors"][0]).to eq "Invalid login credentials. Please try again."
         header = response.header
-        expect(header["access-token"]).not_to be_present
-        expect(header["client"]).not_to be_present
-        expect(header["expiry"]).not_to be_present
-        expect(header["uid"]).not_to be_present
+        expect(header["access-token"]).to be_blank
+        expect(header["client"]).to be_blank
+        expect(header["uid"]).to be_blank
         expect(response).to have_http_status(:unauthorized)
       end
     end
