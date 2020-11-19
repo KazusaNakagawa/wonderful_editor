@@ -44,7 +44,7 @@ class User < ApplicationRecord
 
   # TODO: gem: のこと??
   include DeviseTokenAuth::Concerns::User
-  validates :name, :password, presence: true
+  validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 
   has_many :articles, dependent: :destroy
