@@ -2,7 +2,7 @@ require "rails_helper"
 
 # $ bundle exec rspec spec/requests/api/v1/auth/sessions_request_spec.rb --tag focus
 RSpec.describe "Api::V1::Auth::Sessions", type: :request do
-  describe "POST /api/v1/auth/sing_in" do
+  describe "POST /api/v1/auth/sign_in" do
     subject { post(api_v1_user_session_path, params: params) }
 
     context "登録してるアカウントでログインした時" do
@@ -65,6 +65,30 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
         expect(header["client"]).to be_blank
         expect(header["uid"]).to be_blank
         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe "DELETE /api/v1/auth/sign_out" do
+    subject { delete(destroy_api_v1_user_session_path, headers: headers) }
+
+    context "ログインuserが, ログアウトする時" do
+      let(:user) { create(:user) }
+      let(:headers) { user.create_new_auth_token }
+
+      it "トークンを無くし、ログアウトできる" do
+        subject
+
+        # check token 付与している
+        expect(headers).to be_present
+
+        # check No tokens
+        expect(user.reload.tokens).to be_blank
+        header = user.tokens
+        expect(header["access-token"]).to be_blank
+        expect(header["client"]).to be_blank
+        expect(header["uid"]).to be_blank
+        expect(response).to have_http_status(:ok)
       end
     end
   end
