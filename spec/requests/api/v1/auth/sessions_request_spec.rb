@@ -10,12 +10,12 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
       let(:user) { create(:user) }
       let(:params) { attributes_for(:user, email: user.email, password: user.password) }
 
-      it "login success" do
+      it "ログインできる" do
         subject
         header = response.header
         expect(header["access-token"]).to be_present
         expect(header["client"]).to be_present
-        expect(header["uid"]).to eq user.email
+        expect(header["uid"]).to be_present
         expect(response).to have_http_status(:ok)
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
       let(:user) { create(:user) }
       let(:params) { attributes_for(:user) }
 
-      it "do Error" do
+      it "ログインできない" do
         subject
         res = JSON.parse(response.body)
         expect(res["errors"]).to include "Invalid login credentials. Please try again."
@@ -37,11 +37,11 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
       end
     end
 
-    context "登録されたアカウント: passowrd が違う値で login した時" do
+    context "登録されたアカウント: passowrd が違う値でログインするとき" do
       let(:user) { create(:user) }
       let(:params) { attributes_for(:user, email: user.email, password: "xxxxx") }
 
-      it "do Error" do
+      it "ログインできない" do
         subject
         res = JSON.parse(response.body)
         expect(res["errors"]).to include "Invalid login credentials. Please try again."
@@ -54,11 +54,11 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
       end
     end
 
-    context "登録したアカウント: email が存在しない値で login した時" do
+    context "登録したアカウント: 登録していない email でログインした時" do
       let(:user) { create(:user) }
       let(:params) { attributes_for(:user, email: "xxx@xx.com", password: user.password) }
 
-      it "do Error" do
+      it "ログインできない" do
         subject
         res = JSON.parse(response.body)
         expect(res["errors"]).to include "Invalid login credentials. Please try again."
@@ -76,30 +76,24 @@ RSpec.describe "Api::V1::Auth::Sessions", type: :request do
     subject { delete(destroy_api_v1_user_session_path, headers: headers) }
 
     context "auth token user がログアウトする時" do
-      # let(:user) { create(:user) }
       let(:user) { create(:user) }
-      let(:headers) { user.create_new_auth_token }
+      let!(:headers) { user.create_new_auth_token }
 
       it "トークンを無くし、ログアウトできる" do
-        subject
-
-        # check auth token 付与している
-        expect(headers).to be_present
-
-        # check No tokens
-        expect(user.reload.tokens).to be_blank
-        header = user.tokens
-        expect(header["access-token"]).to be_blank
-        expect(header["client"]).to be_blank
-        expect(header["uid"]).to be_blank
+        expect { subject }.to change { user.reload.tokens }.from(be_present).to(be_blank)
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context "auth tokenが付与されていない状態で, ログアウトしようとした時" do
+    context "auth tokenが付与されていない状態で, 送信した時" do
       let(:user) { create(:user) }
+      let!(:token) { user.create_new_auth_token }
+      # 明示的に空にしたことを書く
+      let!(:headers) { { "access-token" => "", "token-type" => "", "client" => "", "expiry" => "", "uid" => "" } }
+      # 同じ結果にはなる
+      # let!(:headers) { {} }
 
-      it "do Error" do
+      it "存在しないエラー" do
         subject
         res = JSON.parse(response.body)
         expect(res["errors"]).to include "User was not found or was not logged in."
