@@ -1,5 +1,10 @@
 module Api::V1
   # base_api_controller を継承
+
+  # before_action :article_params
+  # before_action :authenticate_api_v1_user!, only: [:create, :update, :destory]
+  # protect_from_forgery with: :null_session
+
   class ArticlesController < BaseApiController
     def index
       # """ 記事の一覧を表示 """
