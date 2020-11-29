@@ -66,15 +66,15 @@ RSpec.describe "Api::V1::Articles", type: :request do
   end
 
   describe "POST /articles" do
-    # 2: 定義
-    #   params: xxx
-    #     xxx: >>> 送りたい値
-    # 記事を作成する動作を確認
+    # 1: 定義
+    #   params: article: :title, :body
+    #   headers: login user // token認証の値
     subject { post(api_v1_articles_path, params: params, headers: headers) }
 
+    let(:current_user) { create(:user) }
+    let(:headers) { current_user.create_new_auth_token }
+
     context "login している user で記事を作成する時" do
-      let(:current_user) { create(:user) }
-      let(:headers) { current_user.create_new_auth_token }
       let(:params) { { article: attributes_for(:article) } }
 
       it "記事が作成できる" do
@@ -88,9 +88,11 @@ RSpec.describe "Api::V1::Articles", type: :request do
       end
     end
 
-    # TODO: 検証保留 2020/10/25
-    context "login していない user が記事作成しようとする時" do
-      it "do Error" do
+    context "titleなしで、記事作成しようとする時" do
+      let(:params) { { article: attributes_for(:article, title: nil) } }
+
+      it "記事作成に失敗する" do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
@@ -98,25 +100,15 @@ RSpec.describe "Api::V1::Articles", type: :request do
   describe "PATCH /api/v1/articles/:id" do
     # 定義
     # 1.article_id: 記事No >>> params を探す
-    subject { patch(api_v1_article_path(article.id), params: params) }
+    subject { patch(api_v1_article_path(article.id), params: params, headers: headers) }
 
-    let(:user) { create(:user) }
-    let!(:user_tokens) { user.create_new_auth_token }
+    let(:current_user) { create(:user) }
+    let!(:headers) { current_user.create_new_auth_token }
     # paramsの定義 >>> articleを探す
     let(:params) { { article: attributes_for(:article) } }
 
-    # 4.user生成
-    # let(:current_user_stub) { create(:user) }
-
-    # 5.stub ログインしたUserを擬似的に生成 >>> currnt_user とする
-    before do
-      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(user) # rubocop:disable all
-    end
-    # ここまで　-----------------------------------------------
-
     context "ログインしたuserが自身の記事を更新しようとする時" do
-      # articleの定義 >>> currnt_user_stubを探す
-      let(:article) { create(:article, user: user) }
+      let(:article) { create(:article, user: current_user) }
 
       it "更新できる" do
         # X を A から B に
@@ -124,8 +116,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
         # subjectは1回のみしか呼べない?? >>> 1回呼び出されたら、キャッシュが効いているから
         #
         # どちらの記述も同じ値が返ってくる??　謎
-        # artcle.title        : >> "title-title" -> String
-        # artcle.reload.title : >> "title-title" -> String
         # reload: この記述にすることで 記事のデータを DB から再取得すると
         expect { subject }.to change { article.reload.title }.from(article.title).to(params[:article][:title]) &
                               change { article.reload.body }.from(article.body).to(params[:article][:body])
@@ -149,19 +139,16 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
   describe "DELETE /articles/:id" do
     # 定義
-    subject { delete(api_v1_article_path(article_id)) }
+    subject { delete(api_v1_article_path(article_id), headers: headers) }
 
-    let(:current_user_stub) { create(:user) }
+    let(:current_user) { create(:user) }
+    let!(:headers) { current_user.create_new_auth_token }
+
     let(:article_id) { article.id }
-
-    # stub ログインしたUserを擬似的に生成 >>> currnt_user とする
-    before do
-      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
-    end
 
     context "ログインしたuserが自身の記事を削除しようとする時" do
       # ログインしたuserで記事作成
-      let!(:article) { create(:article, user: current_user_stub) }
+      let!(:article) { create(:article, user: current_user) }
 
       it "削除できる" do
         expect { subject }.to change { Article.count }.by(-1)
