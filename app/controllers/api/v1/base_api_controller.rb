@@ -1,7 +1,11 @@
 class Api::V1::BaseApiController < ApplicationController
-  # ref: https://devise-token-auth.gitbook.io/devise-token-auth/usage/controller_methods#methods
-  before_action :authenticate_user!
-  # include DeviseTokenAuth::Concerns::SetUserByToken
+  # sgin_in していない場合常に 401 Error を返す
+  # before_action :authenticate_user!
+  # before_action :authenticate_api_v1_user!, only: [:create, :update, :destory]
+
+  # current_api_v1_user
+  # authenticate_api_v1_user!
+  # user_api_v1_signed_in?
 
   def current_user
     # """ 認証Userをインスタン変数に格納
@@ -9,10 +13,7 @@ class Api::V1::BaseApiController < ApplicationController
     #
     #
     # """
-
-    @current_user ||= User.first
-
-    # @current_user ||= current_api_v1_user
+    @current_user ||= current_api_v1_user
   end
 
   def authenticate_user!

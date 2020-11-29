@@ -18,44 +18,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let!(:article3) { create(:article) }
 
     it "記事一覧が表示できる" do
-      # >>> console sample
-      # いろいろ試す事ができる
-      #
-      # res.map {|d| d["user"]["id"] }
-      # => [320, 317, 316]
-      #
-      # article1
-      # => #<Article:0x00007fed2f5a0360
-      #  id: 195,
-      #  title: "tmnknwaseiftocgigmdguio4pspfdw6s5h7rb4pbgnuff7",
-      #  body: "出かけるむこう割り箸むらさきいろ。",
-      #  user_id: 318,
-      #  created_at: Fri, 16 Oct 2020 21:53:59 UTC +00:00,
-      #  updated_at: Thu, 15 Oct 2020 21:53:59 UTC +00:00>
-      #
-      # expect(res[0]["user"].keys).to eq ["id", "name", "email"]
-      # => true
-      #
-      # res
-      # => [{"id"=>197,
-      #   "title"=>"1yjy58z6qpjtl5il6rg3kiyr6p8r1",
-      #   "updated_at"=>"2020-10-16T21:54:00.962Z",
-      #   "user"=>{"id"=>320, "name"=>"野村 彩乃", "email"=>"14_leopoldo_weber@parisian.com"}},
-      #  {"id"=>194,
-      #   "title"=>"4rhfuzp29i9wnnetn4",
-      #   "updated_at"=>"2020-10-16T21:53:59.165Z",
-      #   "user"=>{"id"=>317, "name"=>"林 匠", "email"=>"11_shu@ryan-breitenberg.net"}},
-      #  {"id"=>193,
-      #   "title"=>"sn9un5jypo90w",
-      #   "updated_at"=>"2020-10-16T21:53:58.671Z",
-      #   "user"=>{"id"=>316, "name"=>"金子 優斗", "email"=>"10_solange.schulist@littel.biz"}},]
-      #
-      # res[0]
-      # => {"id"=>197,
-      #  "title"=>"1yjy58z6qpjtl5il6rg3kiyr6p8r1",
-      #  "updated_at"=>"2020-10-16T21:54:00.962Z",
-      #  "user"=>{"id"=>320, "name"=>"野村 彩乃", "email"=>"14_leopoldo_weber@parisian.com"}}
-
       subject
       res = JSON.parse(response.body)
       expect(response).to have_http_status(:ok)
@@ -108,63 +70,19 @@ RSpec.describe "Api::V1::Articles", type: :request do
     #   params: xxx
     #     xxx: >>> 送りたい値
     # 記事を作成する動作を確認
-    subject { post(api_v1_articles_path, params: params) }
+    subject { post(api_v1_articles_path, params: params, headers: headers) }
 
     context "login している user で記事を作成する時" do
-      # 3: subject から呼ばれる
-      #
-      # attributes_for(:xxx) >>> FactoryBotで定義した :xxx をもとにパラメータを再生できる
-      #   [2] pry(RSpec::ExampleGroups::ApiV1Articles::POSTArticles::LogInUser)
-      #   > FactoryBot.attributes_for(:article)
-      #   => {
-      #       :title=>"rehjdlj9l4fomuhpd4p2e4uzh2s31ok",
-      #       :body=>"交錯済ます人口金。"
-      #     }
-      # 3-1
-      #   Api::V1::ArticlesController#article_params
-      #   >> この中の params.reqire(:article)の :article を key として渡す
+      let(:current_user) { create(:user) }
+      let(:headers) { current_user.create_new_auth_token }
       let(:params) { { article: attributes_for(:article) } }
 
-      # 3-2
-      # ExSample
-      #   > current_user
-      #   => #<User
-      #       id: 440,
-      #       provider: "email",
-      #       uid: "1_levi_schowalter@lakin.info",
-      #       allow_password_change: false,
-      #       name: "竹内 翔",
-      #       image: nil,
-      #       email: "1_levi_schowalter@lakin.info",
-      #       created_at: "2020-10-24 00:35:36",
-      #       updated_at: "2020-10-24 00:35:36">
-      # FactoyBotでuserを作成: 変数を currnt_user_stub
-      let!(:current_user_stub) { create(:user) }
-
-      # stub: 外部APIに依存されないようにする
-      # before: 事前に処理するものをかく: 今回でいうとログインされたuserを装う
-      before do
-        # ここでcurrent_userメソッドが呼ばれたら上で作った:currrent_userを返すように実装を上書き
-
-        allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
-
-        # allow(実装を置き換えたいオブジェクト).to receive(置き換えたいメソッド名).and_return(返却したい値やオブジェクト)
-        #                                                      ↓ここで上書き　　　　　　　　↓ここは上で作った変数
-        # allow(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub)
-
-        # >>> 上手くいかない
-        #     1) Api::V1::Articles POST /articles login している user で記事を作成する時 記事が作成できる
-        #           Api::V1::BaseApiController does not implement: current_user
-        #     ./spec/requests/api/v1/articles_spec.rb:154:in `block (4 levels) in <main>'
-      end
-
       it "記事が作成できる" do
-        # 1:実際の処理
         expect { subject }.to change { Article.count }.by(1)
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
         expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
-        expect(res["user_id"]).to eq current_user_stub.id
+        expect(res["user_id"]).to eq current_user.id
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
       end
@@ -182,22 +100,23 @@ RSpec.describe "Api::V1::Articles", type: :request do
     # 1.article_id: 記事No >>> params を探す
     subject { patch(api_v1_article_path(article.id), params: params) }
 
-    # ここから　-----------------------------------------------
-    # 2.paramsの定義 >>> articleを探す
+    let(:user) { create(:user) }
+    let!(:user_tokens) { user.create_new_auth_token }
+    # paramsの定義 >>> articleを探す
     let(:params) { { article: attributes_for(:article) } }
 
     # 4.user生成
-    let(:current_user_stub) { create(:user) }
+    # let(:current_user_stub) { create(:user) }
 
     # 5.stub ログインしたUserを擬似的に生成 >>> currnt_user とする
     before do
-      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(current_user_stub) # rubocop:disable all
+      allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(user) # rubocop:disable all
     end
     # ここまで　-----------------------------------------------
 
     context "ログインしたuserが自身の記事を更新しようとする時" do
       # articleの定義 >>> currnt_user_stubを探す
-      let(:article) { create(:article, user: current_user_stub) }
+      let(:article) { create(:article, user: user) }
 
       it "更新できる" do
         # X を A から B に
