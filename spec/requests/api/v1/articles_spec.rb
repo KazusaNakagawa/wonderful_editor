@@ -18,44 +18,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let!(:article3) { create(:article) }
 
     it "記事一覧が表示できる" do
-      # >>> console sample
-      # いろいろ試す事ができる
-      #
-      # res.map {|d| d["user"]["id"] }
-      # => [320, 317, 316]
-      #
-      # article1
-      # => #<Article:0x00007fed2f5a0360
-      #  id: 195,
-      #  title: "tmnknwaseiftocgigmdguio4pspfdw6s5h7rb4pbgnuff7",
-      #  body: "出かけるむこう割り箸むらさきいろ。",
-      #  user_id: 318,
-      #  created_at: Fri, 16 Oct 2020 21:53:59 UTC +00:00,
-      #  updated_at: Thu, 15 Oct 2020 21:53:59 UTC +00:00>
-      #
-      # expect(res[0]["user"].keys).to eq ["id", "name", "email"]
-      # => true
-      #
-      # res
-      # => [{"id"=>197,
-      #   "title"=>"1yjy58z6qpjtl5il6rg3kiyr6p8r1",
-      #   "updated_at"=>"2020-10-16T21:54:00.962Z",
-      #   "user"=>{"id"=>320, "name"=>"野村 彩乃", "email"=>"14_leopoldo_weber@parisian.com"}},
-      #  {"id"=>194,
-      #   "title"=>"4rhfuzp29i9wnnetn4",
-      #   "updated_at"=>"2020-10-16T21:53:59.165Z",
-      #   "user"=>{"id"=>317, "name"=>"林 匠", "email"=>"11_shu@ryan-breitenberg.net"}},
-      #  {"id"=>193,
-      #   "title"=>"sn9un5jypo90w",
-      #   "updated_at"=>"2020-10-16T21:53:58.671Z",
-      #   "user"=>{"id"=>316, "name"=>"金子 優斗", "email"=>"10_solange.schulist@littel.biz"}},]
-      #
-      # res[0]
-      # => {"id"=>197,
-      #  "title"=>"1yjy58z6qpjtl5il6rg3kiyr6p8r1",
-      #  "updated_at"=>"2020-10-16T21:54:00.962Z",
-      #  "user"=>{"id"=>320, "name"=>"野村 彩乃", "email"=>"14_leopoldo_weber@parisian.com"}}
-
       subject
       res = JSON.parse(response.body)
       expect(response).to have_http_status(:ok)
@@ -108,33 +70,19 @@ RSpec.describe "Api::V1::Articles", type: :request do
     #   params: xxx
     #     xxx: >>> 送りたい値
     # 記事を作成する動作を確認
-    subject { post(api_v1_articles_path, params: params) }
+    subject { post(api_v1_articles_path, params: params, headers: headers) }
 
     context "login している user で記事を作成する時" do
-      let(:user) { create(:user) }
-      let!(:user_tokens) { user.create_new_auth_token }
-
+      let(:current_user) { create(:user) }
+      let(:headers) { current_user.create_new_auth_token }
       let(:params) { { article: attributes_for(:article) } }
-      # let(:params) { user_tokens.create!(article_params) }
-      # let!(:current_user_stub) { create(:user) }
-
-      # stub: 外部APIに依存されないようにする
-      # before: 事前に処理するものをかく: 今回でいうとログインされたuserを装う
-      before do
-        # ここでcurrent_userメソッドが呼ばれたら上で作った:currrent_userを返すように実装を上書き
-        # binding.pry
-        allow_any_instance_of(Api::V1::BaseApiController).to receive(:current_user).and_return(user) # rubocop:disable all
-      end
 
       it "記事が作成できる" do
-        # 1:実際の処理
-        # binding.pry
         expect { subject }.to change { Article.count }.by(1)
-        # binding.pry
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
         expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
-        expect(res["user_id"]).to eq user.id
+        expect(res["user_id"]).to eq current_user.id
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
       end
