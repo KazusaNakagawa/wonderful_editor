@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   root to: "home#index"
 
-  # TODO: ここが "api", "v1" では無い訳??
+  # reload 対策
+  get "sign_up", to: "home#index"
+  get "sign_in", to: "home#index"
+  get "articles/new", to: "home#index"
+  get "articles/:id", to: "home#index"
+
   namespace :api do
     namespace :v1 do
       # 既存のクラスをorverrideで使う. 再発明しない
