@@ -20,7 +20,6 @@
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0), not null
-#  status                 :integer          default("archived"), not null
 #  tokens                 :json
 #  uid                    :string           default(""), not null
 #  unconfirmed_email      :string
@@ -79,22 +78,6 @@ RSpec.describe User, type: :model do
       user = build(:user, email: "foo@foo.xxx")
       expect(user).to be_invalid
       expect(user.errors.details[:email][0][:error]).to eq :taken
-    end
-  end
-
-  context "下書き表示を選択した時" do
-    let(:user) { build(:user) }
-
-    it "下書き記事だけ取得できる" do
-      expect(user.status).to eq "archived"
-    end
-  end
-
-  context "公開記事を選択した時" do
-    let(:user) { build(:user, status: "active") }
-
-    it "公開記事だけ取得できる" do
-      expect(user.status).to eq "active"
     end
   end
 end

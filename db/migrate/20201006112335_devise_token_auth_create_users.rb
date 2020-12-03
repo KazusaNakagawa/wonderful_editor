@@ -5,9 +5,6 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[6.0]
       t.string :provider, null: false, default: "email"
       t.string :uid, null: false, default: ""
 
-      ## Enum article active, archived
-      t.integer :status, null: false, default: 1
-
       ## Database authenticatable
       t.string :encrypted_password, null: false, default: ""
 
