@@ -81,4 +81,20 @@ RSpec.describe User, type: :model do
       expect(user.errors.details[:email][0][:error]).to eq :taken
     end
   end
+
+  context "下書き表示を選択した時" do
+    let(:user) { build(:user) }
+
+    it "下書き記事だけ取得できる" do
+      expect(user.status).to eq "archived"
+    end
+  end
+
+  context "公開記事を選択した時" do
+    let(:user) { build(:user, status: "active") }
+
+    it "公開記事だけ取得できる" do
+      expect(user.status).to eq "active"
+    end
+  end
 end
