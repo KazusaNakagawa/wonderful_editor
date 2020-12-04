@@ -41,9 +41,8 @@ RSpec.describe "Api::V1::Articles", type: :request do
       it "指定したid の記事を表示できる" do
         subject
         res = JSON.parse(response.body)
-
         expect(response).to have_http_status(:ok)
-        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
+        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
 
         # 4: article.xx を明記
         expect(res["id"]).to eq article.id
@@ -81,7 +80,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         expect { subject }.to change { Article.count }.by(1)
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
-        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at"]
+        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
         expect(res["user_id"]).to eq current_user.id
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
