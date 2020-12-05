@@ -49,7 +49,7 @@ RSpec.describe Article, type: :model do
     end
 
     context "公開記事で作成する時" do
-      let(:article) { build(:article, status: :published) }
+      let(:article) { build(:article, :published) }
 
       it "公開記事で作成される" do
         expect(article).to be_valid
