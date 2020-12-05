@@ -66,7 +66,7 @@ module Api::V1
       def article_params
         # """ strong parameter """
         # 引数に修正可能な column を指定する
-        params.require(:article).permit(:title, :body)
+        params.require(:article).permit(:title, :body, :status)
       end
   end
 end

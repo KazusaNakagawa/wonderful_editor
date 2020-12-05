@@ -24,5 +24,13 @@ FactoryBot.define do
     body { Faker::Lorem.sentence }
     # association :user, factory: :user の略
     user
+
+    trait :draft do
+      status { :draft }
+    end
+
+    trait :published do
+      status { :published }
+    end
   end
 end

@@ -62,6 +62,16 @@ RSpec.describe "Api::V1::Articles", type: :request do
         expect { subject }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    context "公開記事である場合" do
+      it "公開一覧に表示される" do
+      end
+    end
+
+    context "下書き記事である場合" do
+      it "公開一覧に表示されない" do
+      end
+    end
   end
 
   describe "POST /articles" do
@@ -84,6 +94,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         expect(res["user_id"]).to eq current_user.id
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
+        expect(res["status"]).to eq "drafts"
       end
     end
 
