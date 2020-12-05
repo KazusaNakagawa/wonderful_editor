@@ -31,7 +31,7 @@ RSpec.describe Article, type: :model do
     end
 
     context "記事作成で, statusを指定しない時" do
-      let(:article) { create(:article) }
+      let(:article) { build(:article) }
 
       it "default で下書き記事が作成される" do
         expect(article).to be_valid
@@ -40,7 +40,7 @@ RSpec.describe Article, type: :model do
     end
 
     context "下書き選択で記事を作成した時" do
-      let(:article) { create(:article, :drafts) }
+      let(:article) { build(:article, :drafts) }
 
       it "下書き記事が作成される" do
         expect(article).to be_valid
@@ -49,7 +49,7 @@ RSpec.describe Article, type: :model do
     end
 
     context "公開記事で作成する時" do
-      let(:article) { create(:article, status: :published) }
+      let(:article) { build(:article, status: :published) }
 
       it "公開記事で作成される" do
         expect(article).to be_valid
