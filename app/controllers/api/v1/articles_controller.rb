@@ -22,7 +22,7 @@ module Api::V1
       if article["status"] == "draft"
         # binding.pry
         response.status = 404
-        render json: 404,  each_serializer: Api::V1::ArticlePreviewSerializer
+        render json: 404, each_serializer: Api::V1::ArticlePreviewSerializer
       end
 
       # 公開された指定記事のみ表示
@@ -69,7 +69,7 @@ module Api::V1
       article.destroy!
 
       # 更新した値を json で返す
-      # render json: article
+      # render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
     private
