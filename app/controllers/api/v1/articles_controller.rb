@@ -18,8 +18,6 @@ module Api::V1
 
       article = Article.find(params[:id])
 
-      # TODO: 存在しない記事が選択された時は404
-
       # 非公開記事が指定された場合は Not Found で返す
       if article["status"] == "drafts"
         # binding.pry
