@@ -4,7 +4,7 @@
 #
 #  id         :bigint           not null, primary key
 #  body       :text
-#  status     :integer          default("drafts"), not null
+#  status     :integer          default("draft"), not null
 #  title      :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -35,16 +35,16 @@ RSpec.describe Article, type: :model do
 
       it "default で下書き記事が作成される" do
         expect(article).to be_valid
-        expect(article.status).to eq "drafts"
+        expect(article.status).to eq "draft"
       end
     end
 
     context "下書き選択で記事を作成した時" do
-      let(:article) { build(:article, :drafts) }
+      let(:article) { build(:article, :draft) }
 
       it "下書き記事が作成される" do
         expect(article).to be_valid
-        expect(article.status).to eq "drafts"
+        expect(article.status).to eq "draft"
       end
     end
 

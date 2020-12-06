@@ -7,8 +7,8 @@ module Api::V1
       # """ 記事の一覧を表示 """
       #  GET: http://localhost:3000/api/v1/articles
 
-      # 降順 sort: :desc
-      articles = Article.order(updated_at: :desc)
+      # 公開一覧記事のみ表示 降順 sort: :desc
+      articles = Article.where(status: 1).order(updated_at: :desc)
       render json: articles, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
@@ -17,7 +17,18 @@ module Api::V1
       #  GET: http://localhost:3000/api/v1/articles/2
 
       article = Article.find(params[:id])
-      render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+
+      # 非公開記事が指定された場合は Not Found で返す
+      if article["status"] == "draft"
+        # binding.pry
+        response.status = 404
+        render json: 404,  each_serializer: Api::V1::ArticlePreviewSerializer
+      end
+
+      # 公開された指定記事のみ表示
+      if article["status"] == "published"
+        render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+      end
     end
 
     def create
@@ -29,7 +40,7 @@ module Api::V1
       article = current_user.articles.create!(article_params)
 
       # json として値を返す
-      render json: article
+      render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
     def update
@@ -43,7 +54,7 @@ module Api::V1
       article.update!(article_params)
 
       # 更新した値を json で返す
-      render json: article
+      render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
     def destroy
