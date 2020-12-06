@@ -86,5 +86,13 @@ RSpec.describe Article, type: :model do
         expect(article.errors.details[:title][1][:error]).to eq :too_short
       end
     end
+
+    # TODO: 異常系
+    context "記事作成で, statusを指定しない時" do
+      # let(:article) { build(:article) }
+
+      it "default で公開記事が作成されてしまう" do
+      end
+    end
   end
 end
