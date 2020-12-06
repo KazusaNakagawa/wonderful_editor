@@ -23,7 +23,8 @@ RSpec.describe "Api::V1::Articles", type: :request do
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
         expect(res.length).to eq 3
-        expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
+        # ここは, Serializer で指定した column が入る
+        expect(res[0].keys).to eq ["id", "title", "status", "updated_at", "user"]
         expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
         expect(res[0]["user"].keys).to eq ["id", "name", "email"]
       end
@@ -64,7 +65,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
       end
 
       context "下書き記事である場合" do
-        let(:article) { create(:article, :drafts) }
+        let(:article) { create(:article, :draft) }
         let(:article_id) { article.id }
 
         it "status 404で返す" do
@@ -105,7 +106,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         expect(res["user_id"]).to eq current_user.id
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
-        expect(res["status"]).to eq "drafts"
+        expect(res["status"]).to eq "draft"
       end
     end
 
@@ -126,10 +127,10 @@ RSpec.describe "Api::V1::Articles", type: :request do
     let(:current_user) { create(:user) }
     let!(:headers) { current_user.create_new_auth_token }
     # paramsの定義 >>> articleを探す
-    let(:params) { { article: attributes_for(:article) } }
+    let(:params) { { article: attributes_for(:article, :draft) } }
 
     context "ログインしたuserが自身の記事を更新しようとする時" do
-      let(:article) { create(:article, user: current_user) }
+      let(:article) { create(:article, :draft, user: current_user) }
 
       it "更新できる" do
         # X を A から B に
@@ -159,7 +160,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
   end
 
   describe "DELETE /articles/:id" do
-    # 定義
     subject { delete(api_v1_article_path(article_id), headers: headers) }
 
     let(:current_user) { create(:user) }
