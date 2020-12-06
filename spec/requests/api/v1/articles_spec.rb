@@ -10,61 +10,22 @@ RSpec.describe "Api::V1::Articles", type: :request do
     # status 200 の確認　
     subject { get(api_v1_articles_path) }
 
-    # updated_at 引数設定は, descを確かめるため
-    # この書き方はしない >>> let!(:article) { create_list(:article, 3) }
-    # let! =>配下より先に処理される
-    let!(:article1) { create(:article, updated_at: 1.days.ago) }
-    let!(:article2) { create(:article, updated_at: 2.days.ago) }
-    let!(:article3) { create(:article) }
+    context "公開記事である時" do
+      # updated_at 引数設定は, descを確かめるため
+      # この書き方はしない >>> let!(:article) { create_list(:article, 3) }
+      # let! =>配下より先に処理される
+      let!(:article1) { create(:article, :published, updated_at: 1.days.ago) }
+      let!(:article2) { create(:article, :published, updated_at: 2.days.ago) }
+      let!(:article3) { create(:article, :published) }
 
-    it "記事一覧が表示できる" do
-      subject
-      res = JSON.parse(response.body)
-      expect(response).to have_http_status(:ok)
-      expect(res.length).to eq 3
-      expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
-      expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
-      expect(res[0]["user"].keys).to eq ["id", "name", "email"]
-    end
-  end
-
-  describe "GET /articles/:id" do
-    # 1: article_id を探す
-    subject { get(api_v1_article_path(article_id)) }
-
-    context "指定した id の記事が存在する場合" do
-      # 3: ここの articleを辿る
-      let(:article) { create(:article) }
-      # 2: article を探す
-      let(:article_id) { article.id }
-
-      it "指定したid の記事を表示できる" do
+      it "記事一覧が表示できる" do
         subject
         res = JSON.parse(response.body)
         expect(response).to have_http_status(:ok)
-        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
-
-        # 4: article.xx を明記
-        expect(res["id"]).to eq article.id
-        expect(res["title"]).to eq article.title
-        expect(res["body"]).to eq article.body
-        expect(res["user_id"]).to eq article.user_id
-
-        # be_xxx: matcher
-        expect(res["updated_at"]).to be_present
-      end
-    end
-
-    context "指定した id の記事が存在しない場合" do
-      let(:article_id) { Article.last&.id.to_i + 1 }
-
-      it "指定したid の記事が表示できない" do
-        expect { subject }.to raise_error ActiveRecord::RecordNotFound
-      end
-    end
-
-    context "公開記事である場合" do
-      it "公開一覧に表示される" do
+        expect(res.length).to eq 3
+        expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
+        expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
+        expect(res[0]["user"].keys).to eq ["id", "name", "email"]
       end
     end
 
@@ -74,9 +35,59 @@ RSpec.describe "Api::V1::Articles", type: :request do
     end
   end
 
+  describe "GET /articles/:id" do
+    # 1: article_id を探す
+    subject { get(api_v1_article_path(article_id)) }
+
+    describe "正常系" do
+      context "指定した id の記事が存在する場合" do
+        # 3: ここの articleを辿る
+        let(:article) { create(:article, :published) }
+        # 2: article を探す
+        let(:article_id) { article.id }
+
+        it "指定したid の記事を表示できる" do
+          subject
+          res = JSON.parse(response.body)
+          expect(response).to have_http_status(:ok)
+          expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
+
+          # 4: article.xx を明記
+          expect(res["id"]).to eq article.id
+          expect(res["title"]).to eq article.title
+          expect(res["body"]).to eq article.body
+          expect(res["user_id"]).to eq article.user_id
+
+          # be_xxx: matcher
+          expect(res["updated_at"]).to be_present
+        end
+      end
+
+      context "下書き記事である場合" do
+        let(:article) { create(:article, :drafts) }
+        let(:article_id) { article.id }
+
+        it "status 404で返す" do
+          subject
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
+    describe "異常系" do
+      context "指定した id の記事が存在しない場合" do
+        let(:article_id) { Article.last&.id.to_i + 1 }
+
+        it "指定したid の記事が表示できない" do
+          expect { subject }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+  end
+
   describe "POST /articles" do
     # 1: 定義
-    #   params: article: :title, :body
+    #   params: article: :title, :body, :status
     #   headers: login user // token認証の値
     subject { post(api_v1_articles_path, params: params, headers: headers) }
 
