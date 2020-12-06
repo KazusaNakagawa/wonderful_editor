@@ -7,8 +7,8 @@ module Api::V1
       # """ 記事の一覧を表示 """
       #  GET: http://localhost:3000/api/v1/articles
 
-      # 降順 sort: :desc
-      articles = Article.order(updated_at: :desc)
+      # 公開一覧記事のみ表示 降順 sort: :desc
+      articles = Article.where(status: 1).order(updated_at: :desc)
       render json: articles, each_serializer: Api::V1::ArticlePreviewSerializer
     end
 
@@ -17,7 +17,20 @@ module Api::V1
       #  GET: http://localhost:3000/api/v1/articles/2
 
       article = Article.find(params[:id])
-      render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+
+      # TODO: 存在しない記事が選択された時は404
+
+      # 非公開記事が指定された場合は Not Found で返す
+      if article["status"] == "drafts"
+        # binding.pry
+        response.status = 404
+        render json: 404,  each_serializer: "指定した記事は存在しません"
+      end
+
+      # 公開された指定記事のみ表示
+      if article["status"] == "published"
+        render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+      end
     end
 
     def create
