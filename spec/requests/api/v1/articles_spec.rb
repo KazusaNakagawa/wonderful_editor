@@ -21,17 +21,13 @@ RSpec.describe "Api::V1::Articles", type: :request do
       it "記事一覧が表示できる" do
         subject
         res = JSON.parse(response.body)
+
         expect(response).to have_http_status(:ok)
         expect(res.length).to eq 3
         # ここは, Serializer で指定した column が入る
         expect(res[0].keys).to eq ["id", "title", "status", "updated_at", "user"]
         expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
         expect(res[0]["user"].keys).to eq ["id", "name", "email"]
-      end
-    end
-
-    context "下書き記事である場合" do
-      it "公開一覧に表示されない" do
       end
     end
   end
@@ -50,6 +46,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         it "指定したid の記事を表示できる" do
           subject
           res = JSON.parse(response.body)
+
           expect(response).to have_http_status(:ok)
           expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
 
@@ -101,6 +98,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
       it "記事が作成できる" do
         expect { subject }.to change { Article.count }.by(1)
         res = JSON.parse(response.body)
+
         expect(response).to have_http_status(:ok)
         expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
         expect(res["user_id"]).to eq current_user.id
@@ -126,10 +124,10 @@ RSpec.describe "Api::V1::Articles", type: :request do
 
     let(:current_user) { create(:user) }
     let!(:headers) { current_user.create_new_auth_token }
-    # paramsの定義 >>> articleを探す
-    let(:params) { { article: attributes_for(:article, :draft) } }
 
-    context "ログインしたuserが自身の記事を更新しようとする時" do
+    context "ログインしたuserが自身の記事を公開記事を下書きで更新しようとする時" do
+      # paramsの定義 >>> articleを探す
+      let(:params) { { article: attributes_for(:article, :published) } }
       let(:article) { create(:article, :draft, user: current_user) }
 
       it "更新できる" do
@@ -140,21 +138,32 @@ RSpec.describe "Api::V1::Articles", type: :request do
         # どちらの記述も同じ値が返ってくる??　謎
         # reload: この記述にすることで 記事のデータを DB から再取得すると
         expect { subject }.to change { article.reload.title }.from(article.title).to(params[:article][:title]) &
-                              change { article.reload.body }.from(article.body).to(params[:article][:body])
+                              change { article.reload.body }.from(article.body).to(params[:article][:body]) &
+                              change { article.reload.status }.from(article.status).to(params[:article][:status].to_s)
         expect(response).to have_http_status(:ok)
       end
-    end
 
-    context "ログインしたuserが他人の記事を更新しようとした時" do
-      # user生成
-      let(:other_user) { create(:user) }
-      # 先呼び出ししないとErrorする recode数の確認のところでerrorはく
-      let!(:article) { create(:article, user: other_user) }
+      context "ログインしたuserが自身の記事を下書きから公開更新しようとする時" do
+        let(:params) { { article: attributes_for(:article, :draft) } }
+        let(:article) { create(:article, :published, user: current_user) }
 
-      it "更新出来ない" do
-        # Error, recode数に変化ないことを確認している
-        expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
-                              change { Article.count }.by(0)
+        it "更新できる" do
+          expect { subject }.to change { article.reload.status }.from(article.status).to(params[:article][:status].to_s)
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context "ログインしたuserが他人の記事を更新しようとした時" do
+        # user生成
+        let(:other_user) { create(:user) }
+        # 先呼び出ししないとErrorする recode数の確認のところでerrorはく
+        let!(:article) { create(:article, user: other_user) }
+
+        it "更新出来ない" do
+          # Error, recode数に変化ないことを確認している
+          expect { subject }.to raise_error(ActiveRecord::RecordNotFound) &
+                                change { Article.count }.by(0)
+        end
       end
     end
   end

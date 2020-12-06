@@ -20,9 +20,8 @@ module Api::V1
 
       # 非公開記事が指定された場合は Not Found で返す
       if article["status"] == "draft"
-        # binding.pry
         response.status = 404
-        render json: 404, each_serializer: Api::V1::ArticlePreviewSerializer
+        render json: 404
       end
 
       # 公開された指定記事のみ表示
