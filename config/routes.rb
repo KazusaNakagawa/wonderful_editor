@@ -16,6 +16,10 @@ Rails.application.routes.draw do
       }
       # REST API 紐付ける
       resources :articles
+
+      namespace :articles do
+        resources :draft
+      end
     end
   end
 end
