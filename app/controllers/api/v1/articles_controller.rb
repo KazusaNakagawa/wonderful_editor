@@ -18,6 +18,8 @@ module Api::V1
 
       article = Article.find(params[:id])
 
+      # TODO: 登録されていないレコードが指定された時, Not Found で返すメッセージ
+
       # 非公開記事が指定された場合は Not Found で返す
       if article["status"] == "draft"
         response.status = 404
