@@ -11,7 +11,7 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
 
       let!(:article1) { create(:article, :draft, user: current_user, updated_at: 1.days.ago) }
       let!(:article2) { create(:article, :draft, user: current_user, updated_at: 2.days.ago) }
-      let!(:article3) { create(:article, :draft, user: current_user ) }
+      let!(:article3) { create(:article, :draft, user: current_user) }
 
       it "閲覧できる" do
         subject
