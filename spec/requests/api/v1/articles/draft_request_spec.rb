@@ -52,11 +52,28 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
     end
   end
 
-  describe "GET  /api/v1/articles/draft/:id" do
-    subject { get(api_v1_articles_draft_path(article_id)) }
+  describe "GET /api/v1/articles/draft/:id" do
+    subject { get(api_v1_articles_draft_path(article_id), headers: headers) }
+
+    # user作成
+    let(:current_user) { create(:user) }
+    let(:headers) { current_user.create_new_auth_token }
 
     context "自身の指定した id の記事が存在する時" do
+      let!(:article) { create(:article, :draft, user: current_user) }
+      let(:article_id) { article.id }
+
       it "閲覧できる" do
+        subject
+        res = JSON.parse(response.body)
+
+        expect(res["id"]).to eq article.id
+        expect(res["title"]).to eq article.title
+        expect(res["body"]).to eq article.body
+        expect(res["user_id"]).to eq article.user_id
+        expect(res["status"]).to eq "draft"
+
+        expect(response).to have_http_status(:ok)
       end
     end
 
