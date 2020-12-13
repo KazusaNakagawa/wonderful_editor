@@ -77,13 +77,28 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
       end
     end
 
-    context "自身の指定した id の記事が存在しない時" do
+    context "自身の指定した id の記事が公開記事の時" do
+      let(:article) { create(:article, :published, user: current_user) }
+      let(:article_id) { article.id }
+
       it "Not Found で返す" do
+        subject
+        expect(response).to have_http_status(:not_found)
       end
     end
 
-    context "他のアカウントで下書き記事を表示させようとした時" do
-      it "記事が表示できない" do
+    context "他ユーザの下書き詳細記事を閲覧しようとした時" do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      let(:other_user) { create(:user) }
+      let(:token) { other_user.create_new_auth_token }
+      let(:article_id) { article.id }
+
+      # 記事作成
+      let!(:article) { create(:article, :draft, user: other_user) }
+      let!(:other_user_headers) { { "access-token" => "", "token-type" => "", "client" => "", "expiry" => "", "uid" => "" } }
+
+      it "閲覧できない" do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(current_user.email).to eq headers["uid"]
       end
     end
   end
