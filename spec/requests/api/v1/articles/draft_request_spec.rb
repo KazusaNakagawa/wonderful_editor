@@ -5,7 +5,7 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
   describe "GET /api/v1/articles/draft" do
     subject { get(api_v1_articles_draft_index_path, headers: headers) }
 
-    # 登録Userでログイン
+    # user作成
     let(:current_user) { create(:user) }
     let(:headers) { current_user.create_new_auth_token }
 
@@ -24,6 +24,29 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
         expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
         expect(res[0]["user"].keys).to eq ["id", "name", "email"]
         expect(res[0]["status"]).to eq "draft"
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "他ユーザの下書き一覧を確認しようとした時" do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      let(:other_user) { create(:user) }
+      let(:token) { other_user.create_new_auth_token }
+      # 記事作成
+      let!(:article) { create(:article, :draft, user: other_user) }
+
+      # """ 下書き記事を作成した後ログアウトする
+      # まあ、他ユーザがログインしてても支障はなさそう
+      # >>> rubocop: 退避コメントを入れて対応した
+      # """
+      let!(:other_user_headers) { { "access-token" => "", "token-type" => "", "client" => "", "expiry" => "", "uid" => "" } }
+
+      it "閲覧できない" do
+        subject
+        res = JSON.parse(response.body)
+        # 現在ログインしているuserか確認する
+        expect(current_user.email).to eq headers["uid"]
+
+        expect(res).to be_blank
         expect(response).to have_http_status(:ok)
       end
     end
