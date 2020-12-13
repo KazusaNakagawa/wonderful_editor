@@ -52,21 +52,53 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
     end
   end
 
-  describe "GET  /api/v1/articles/draft/:id" do
-    subject { get(api_v1_articles_draft_path(article_id)) }
+  describe "GET /api/v1/articles/draft/:id" do
+    subject { get(api_v1_articles_draft_path(article_id), headers: headers) }
+
+    # user作成
+    let(:current_user) { create(:user) }
+    let(:headers) { current_user.create_new_auth_token }
 
     context "自身の指定した id の記事が存在する時" do
+      let!(:article) { create(:article, :draft, user: current_user) }
+      let(:article_id) { article.id }
+
       it "閲覧できる" do
+        subject
+        res = JSON.parse(response.body)
+
+        expect(res["id"]).to eq article.id
+        expect(res["title"]).to eq article.title
+        expect(res["body"]).to eq article.body
+        expect(res["user_id"]).to eq article.user_id
+        expect(res["status"]).to eq "draft"
+
+        expect(response).to have_http_status(:ok)
       end
     end
 
-    context "自身の指定した id の記事が存在しない時" do
+    context "自身の指定した id の記事が公開記事の時" do
+      let(:article) { create(:article, :published, user: current_user) }
+      let(:article_id) { article.id }
+
       it "Not Found で返す" do
+        subject
+        expect(response).to have_http_status(:not_found)
       end
     end
 
-    context "他のアカウントで下書き記事を表示させようとした時" do
-      it "記事が表示できない" do
+    context "他ユーザの下書き詳細記事を閲覧しようとした時" do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      let(:other_user) { create(:user) }
+      let(:token) { other_user.create_new_auth_token }
+      let(:article_id) { article.id }
+
+      # 記事作成
+      let!(:article) { create(:article, :draft, user: other_user) }
+      let!(:other_user_headers) { { "access-token" => "", "token-type" => "", "client" => "", "expiry" => "", "uid" => "" } }
+
+      it "閲覧できない" do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(current_user.email).to eq headers["uid"]
       end
     end
   end
