@@ -25,7 +25,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         expect(response).to have_http_status(:ok)
         expect(res.length).to eq 3
         # ここは, Serializer で指定した column が入る
-        expect(res[0].keys).to eq ["id", "title", "status", "updated_at", "user"]
+        expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
         expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
         expect(res[0]["user"].keys).to eq ["id", "name", "email"]
       end
@@ -48,28 +48,29 @@ RSpec.describe "Api::V1::Articles", type: :request do
           res = JSON.parse(response.body)
 
           expect(response).to have_http_status(:ok)
-          expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
+          expect(res.keys).to eq ["id", "title", "body", "status", "updated_at", "user"]
 
           # 4: article.xx を明記
           expect(res["id"]).to eq article.id
           expect(res["title"]).to eq article.title
           expect(res["body"]).to eq article.body
-          expect(res["user_id"]).to eq article.user_id
+          expect(res["status"]).to eq "published"
 
           # be_xxx: matcher
           expect(res["updated_at"]).to be_present
         end
       end
 
-      context "下書き記事である場合" do
-        let(:article) { create(:article, :draft) }
-        let(:article_id) { article.id }
+      # context "下書き記事である場合" do
+      #   let(:article) { create(:article, :draft) }
+      #   let(:article_id) { article.id }
 
-        it "status 404で返す" do
-          subject
-          expect(response).to have_http_status(:not_found)
-        end
-      end
+      #   fit "status 404で返す" do
+      #     subject
+      #     expect { subject }.to raise_error ActiveRecord::RecordNotFound
+      #     # expect(response).to have_http_status(:not_found)
+      #   end
+      # end
     end
 
     describe "異常系" do
@@ -100,8 +101,7 @@ RSpec.describe "Api::V1::Articles", type: :request do
         res = JSON.parse(response.body)
 
         expect(response).to have_http_status(:ok)
-        expect(res.keys).to eq ["id", "title", "body", "user_id", "created_at", "updated_at", "status"]
-        expect(res["user_id"]).to eq current_user.id
+        expect(res.keys).to eq ["id", "title", "body", "status", "updated_at", "user"]
         expect(res["title"]).to eq params[:article][:title]
         expect(res["body"]).to eq params[:article][:body]
         expect(res["status"]).to eq "draft"

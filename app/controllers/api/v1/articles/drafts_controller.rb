@@ -26,7 +26,8 @@ module Api::V1
 
       # 下書き指定記事のみ表示
       if article["status"] == "draft"
-        render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+        # render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+        render json: article, serializer: Api::V1::ArticleSerializer
       end
     end
   end
