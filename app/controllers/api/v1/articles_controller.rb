@@ -16,7 +16,7 @@ module Api::V1
       # """ 記事の詳細をみる """
       #  GET: http://localhost:3000/api/v1/articles/2
 
-      article = Article.find(params[:id])
+      article = Article.where(status: 1).find(params[:id])
 
       # TODO: 登録されていないレコードが指定された時, Not Found で返すメッセージ
 
@@ -28,7 +28,7 @@ module Api::V1
 
       # 公開された指定記事のみ表示
       if article["status"] == "published"
-        render json: article, each_serializer: Api::V1::ArticlePreviewSerializer
+        render json: article, serializer: Api::V1::ArticleSerializer
       end
     end
 

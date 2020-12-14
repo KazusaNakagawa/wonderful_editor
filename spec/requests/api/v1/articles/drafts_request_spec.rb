@@ -2,8 +2,8 @@ require "rails_helper"
 
 # $ bundle exec rspec spec/requests/api/v1/articles/draft_request_spec.rb --tag focus
 RSpec.describe "Api::V1::Articles::Drafts", type: :request do
-  describe "GET /api/v1/articles/draft" do
-    subject { get(api_v1_articles_draft_index_path, headers: headers) }
+  describe "GET /api/v1/articles/drafts" do
+    subject { get(api_v1_articles_drafts_path, headers: headers) }
 
     context "ユーザを作成" do
       let(:current_user) { create(:user) }
@@ -20,10 +20,9 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
           res = JSON.parse(response.body)
 
           expect(res.length).to eq 3
-          expect(res[0].keys).to eq ["id", "title", "status", "updated_at", "user"]
+          expect(res[0].keys).to eq ["id", "title", "updated_at", "user"]
           expect(res.map {|d| d["id"] }).to eq [article3.id, article1.id, article2.id]
           expect(res[0]["user"].keys).to eq ["id", "name", "email"]
-          expect(res[0]["status"]).to eq "draft"
           expect(response).to have_http_status(:ok)
         end
       end
@@ -53,7 +52,7 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
     end
   end
 
-  describe "GET /api/v1/articles/draft/:id" do
+  describe "GET /api/v1/articles/drafts/:id" do
     subject { get(api_v1_articles_draft_path(article_id), headers: headers) }
 
     context "ユーザを作成" do
@@ -67,11 +66,9 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
         it "閲覧できる" do
           subject
           res = JSON.parse(response.body)
-
           expect(res["id"]).to eq article.id
           expect(res["title"]).to eq article.title
           expect(res["body"]).to eq article.body
-          expect(res["user_id"]).to eq article.user_id
           expect(res["status"]).to eq "draft"
 
           expect(response).to have_http_status(:ok)
