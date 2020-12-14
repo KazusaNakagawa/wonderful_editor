@@ -1,5 +1,5 @@
 module Api::V1
-  class Articles::DraftController < BaseApiController
+  class Articles::DraftsController < BaseApiController
     before_action :authenticate_user!
 
     def index

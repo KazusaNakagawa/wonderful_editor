@@ -2,8 +2,8 @@ require "rails_helper"
 
 # $ bundle exec rspec spec/requests/api/v1/articles/draft_request_spec.rb --tag focus
 RSpec.describe "Api::V1::Articles::Drafts", type: :request do
-  describe "GET /api/v1/articles/draft" do
-    subject { get(api_v1_articles_draft_index_path, headers: headers) }
+  describe "GET /api/v1/articles/drafts" do
+    subject { get(api_v1_articles_drafts_path, headers: headers) }
 
     context "ユーザを作成" do
       let(:current_user) { create(:user) }
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
     end
   end
 
-  describe "GET /api/v1/articles/draft/:id" do
+  describe "GET /api/v1/articles/drafts/:id" do
     subject { get(api_v1_articles_draft_path(article_id), headers: headers) }
 
     context "ユーザを作成" do
