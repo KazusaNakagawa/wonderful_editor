@@ -6,7 +6,7 @@ module Api::V1
       # """ 自身公開一覧が確認できる処理 """"
       # GET: http://localhost:3000/api/v1/current/articles
 
-      articles = current_user.articles.where(status: 1).order(updated_at: :desc)
+      articles = current_user.articles.published.order(updated_at: :desc)
       render json: articles, each_serializer: Api::V1::ArticlePreviewSerializer
     end
   end
