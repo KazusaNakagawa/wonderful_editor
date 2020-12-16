@@ -1,6 +1,6 @@
 require "rails_helper"
 
-# $ bundle exec rspec spec/requests/api/v1/articles/draft_request_spec.rb --tag focus
+# $ bundle exec rspec spec/requests/api/v1/articles/drafts_request_spec.rb --tag focus
 RSpec.describe "Api::V1::Articles::Drafts", type: :request do
   describe "GET /api/v1/articles/drafts" do
     subject { get(api_v1_articles_drafts_path, headers: headers) }
@@ -72,16 +72,6 @@ RSpec.describe "Api::V1::Articles::Drafts", type: :request do
           expect(res["status"]).to eq "draft"
 
           expect(response).to have_http_status(:ok)
-        end
-      end
-
-      context "自身の指定した id の記事が公開記事の時" do
-        let(:article) { create(:article, :published, user: current_user) }
-        let(:article_id) { article.id }
-
-        it "Not Found で返す" do
-          subject
-          expect(response).to have_http_status(:not_found)
         end
       end
 

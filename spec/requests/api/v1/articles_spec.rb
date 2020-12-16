@@ -60,17 +60,6 @@ RSpec.describe "Api::V1::Articles", type: :request do
           expect(res["updated_at"]).to be_present
         end
       end
-
-      # context "下書き記事である場合" do
-      #   let(:article) { create(:article, :draft) }
-      #   let(:article_id) { article.id }
-
-      #   fit "status 404で返す" do
-      #     subject
-      #     expect { subject }.to raise_error ActiveRecord::RecordNotFound
-      #     # expect(response).to have_http_status(:not_found)
-      #   end
-      # end
     end
 
     describe "異常系" do
