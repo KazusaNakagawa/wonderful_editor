@@ -59,15 +59,6 @@ RSpec.describe Article, type: :model do
   end
 
   describe "異常系" do
-    context "title が 10文字より少ない時" do
-      let(:article) { build(:article, title: "*" * 9) }
-
-      it "記事の投稿に失敗する" do
-        expect(article).to be_invalid
-        expect(article.errors.details[:title][0][:error]).to eq :too_short
-      end
-    end
-
     context "title が 50文字より多い時" do
       let(:article) { build(:article, title: "*" * 51) }
 
@@ -84,14 +75,6 @@ RSpec.describe Article, type: :model do
         expect(article).to be_invalid
         expect(article.errors.details[:title][0][:error]).to eq :blank
         expect(article.errors.details[:title][1][:error]).to eq :too_short
-      end
-    end
-
-    # TODO: 異常系
-    context "記事作成で, statusを指定しない時" do
-      # let(:article) { build(:article) }
-
-      it "default で公開記事が作成されてしまう" do
       end
     end
   end
