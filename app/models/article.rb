@@ -20,7 +20,7 @@
 #
 class Article < ApplicationRecord
   belongs_to :user
-  validates :title, presence: true, length: { in: 10..50 }
+  validates :title, presence: true, length: { in: 1..50 }
 
   has_many :article_likes, dependent: :destroy
   has_many :comments, dependent: :destroy
