@@ -3,6 +3,7 @@
 # Table name: article_likes
 #
 #  id         :bigint           not null, primary key
+#  like_count :integer          default(0), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  article_id :bigint           not null
