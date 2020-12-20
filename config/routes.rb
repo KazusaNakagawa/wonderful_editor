@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       }
 
       namespace :articles do
+        resources :article_likes, only: [:create, :destroy]
         resources :drafts, only: [:index, :show]
       end
 
