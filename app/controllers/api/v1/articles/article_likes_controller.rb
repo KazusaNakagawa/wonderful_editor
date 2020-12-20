@@ -5,7 +5,7 @@ module Api::V1
     def create
       # """ いいねする """
       article_like = current_user.article_likes.create!(article_id: params[:article_id])
-      render json: article_like
+      render json: article_like, serializer: Api::V1::ArticleLikeSerializer
     end
 
     def destroy
