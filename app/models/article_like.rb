@@ -22,4 +22,7 @@
 class ArticleLike < ApplicationRecord
   belongs_to :user
   belongs_to :article
+
+  # 1記事に１いいねのみ
+  validates :article_id, uniqueness: { scope: :user_id } # rubocop:disable Rails/UniqueValidationWithoutIndex:
 end
