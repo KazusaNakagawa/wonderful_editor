@@ -49,4 +49,9 @@ class User < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :article_likes, dependent: :destroy
   has_many :comments, dependent: :destroy
+
+  def article_liked_by?(article)
+    # """ 「いいね」しているかの確認 """
+    self.article_likes.exists?(article_id: article.id)
+  end
 end
