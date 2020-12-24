@@ -10,8 +10,9 @@
 #
 # Indexes
 #
-#  index_article_likes_on_article_id  (article_id)
-#  index_article_likes_on_user_id     (user_id)
+#  index_article_likes_on_article_id              (article_id)
+#  index_article_likes_on_user_id                 (user_id)
+#  index_article_likes_on_user_id_and_article_id  (user_id,article_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -23,5 +24,5 @@ class ArticleLike < ApplicationRecord
   belongs_to :article
 
   # 1記事に１いいねのみ
-  validates :article_id, uniqueness: { scope: :user_id } # rubocop:disable Rails/UniqueValidationWithoutIndex:
+  validates :article_id, uniqueness: { scope: :user_id }
 end
