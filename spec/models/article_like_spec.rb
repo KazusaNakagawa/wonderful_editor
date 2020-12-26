@@ -23,7 +23,24 @@ require "rails_helper"
 
 RSpec.describe ArticleLike, type: :model do
   context "記事が存在している時" do
-    it "いいねをクリックできる" do
+    let(:article_like) { create(:article_like) }
+
+    it "いいねできる" do
+      expect(article_like).to be_valid
+    end
+  end
+
+  context "記事が存在しない時" do
+    # let(:article_like) { build(:article_like) }
+    # """ 確認できる
+    # article_like.article
+    # article_like.user
+    # """
+
+    it "いいねできない" do
+      # binding.pry
+      # expect(article_like).to be_invalid
+      # expect(article_like.errors.messages[:article][0]).to eq "must exist"
     end
   end
 end
