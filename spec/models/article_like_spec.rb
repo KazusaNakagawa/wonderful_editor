@@ -30,17 +30,13 @@ RSpec.describe ArticleLike, type: :model do
     end
   end
 
-  context "記事が存在しない時" do
-    # let(:article_like) { build(:article_like) }
-    # """ 確認できる
-    # article_like.article
-    # article_like.user
-    # """
+  context "記事のidが nil である時" do
+    let(:article_like) { build(:article_like, article_id: nil) }
 
     it "いいねできない" do
-      # binding.pry
-      # expect(article_like).to be_invalid
-      # expect(article_like.errors.messages[:article][0]).to eq "must exist"
+      article_like.valid?
+      expect(article_like).to be_invalid
+      expect(article_like.errors.messages[:article][0]).to eq "must exist"
     end
   end
 end
