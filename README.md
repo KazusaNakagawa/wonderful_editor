@@ -3,6 +3,7 @@
 
 ### デモの流れ
  * 新規登録 > 下書き記事作成 > 一覧で確認 > 投稿 > ログアウト
+ 
 ![demo_video](https://github.com/KazusaNakagawa/wonderful_editor/issues/98#issue-776820037)
 
 ## 動作環境
