@@ -1,26 +1,70 @@
-# README
-
 ## About
-* WondfulEditor : Qiita風
 
-Things you may want to cover:
+- WondfulEditor : 記事作成アプリ
 
-* version
-  - ruby  2.7.1
-  - Rails 6.0.3.3
+### デモの流れ
 
-* System dependencies
+- 新規登録 > 下書き記事作成 > 一覧で確認 > 投稿 > ログアウト > 一覧から記事確認
 
-* Configuration
+![demo_video](https://user-images.githubusercontent.com/34918376/103398197-f39c4780-4b7e-11eb-80e5-01f3436d5c4d.gif)
 
-* Database creation
+## 動作環境
 
-* Database initialization
+- ruby 2.7.1
+- Rails 6.0.3.3
+- Vue.js: 2.6.11
+- DB: PostgreSQL
 
-* How to run the test suite
+## 主な使用 Gem
 
-* Services (job queues, cache servers, search engines, etc.)
+- active_model_serializers
+- devise_token_auth
+- rubocop-rails, rubocop-rspec
+- annotate
+- pry-byebug, pry-rails, pry-doc
 
-* Deployment instructions
+## 実装機能
 
-* ...
+- 記事一覧機能(トップページ)
+- 記事 CRUD (一覧以外)
+- ユーザー登録・サインイン/サインアウト
+- 記事の下書き機能
+- マイページ（自分が書いた記事の一覧）
+
+## 今後追加する機能
+
+- 記事の検索機能
+- (記事への) コメント機能(CRUD)
+- (記事への) いいね機能
+- メール通知
+- ユーザーのアイコン画像
+- レスポンシブ対応
+
+## 起動コマンド
+
+```bash
+$ bundle exec rails s
+$ bin/webpack-dev-server
+```
+
+## 苦労した点
+
+### devise_token_auth
+
+- トークン形式でユーザー認証を実装する流れは試行錯誤できた
+- `devise` から継承して使われている流れも勉強になった
+- 公式リファレンスを読みときながら実装方法を調べること
+
+## 学んだ点
+
+- 実装すべき機能をイメージできていないとそもそも実装できない
+- Gem の扱い方：Github にある説明を読み解き、実装していく流れ
+- `active_model_serializers`を使用し、必要な項目のみを JSON 形式で返すことができること
+- **Rspec** を使用したテスト実装
+- **endpoint** を意識して実装
+- version 管理
+
+## 今後に向けて
+
+- サービスとして運用できるアプリ作成
+- 本番環境にデプロイ
