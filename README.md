@@ -6,7 +6,7 @@
 
 - 新規登録 > 下書き記事作成 > 一覧で確認 > 投稿 > ログアウト > 一覧から記事確認
 
-![demo_video](https://user-images.githubusercontent.com/34918376/103398197-f39c4780-4b7e-11eb-80e5-01f3436d5c4d.gif)
+![demo_video](https://user-images.githubusercontent.com/34918376/103399589-13366e80-4b85-11eb-8a59-72a3e5126a3e.gif)
 
 ## 動作環境
 
