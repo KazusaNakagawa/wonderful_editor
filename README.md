@@ -40,13 +40,6 @@
 - ユーザーのアイコン画像
 - レスポンシブ対応
 
-## 起動コマンド
-
-```bash
-$ bundle exec rails s
-$ bin/webpack-dev-server
-```
-
 ## 苦労した点
 
 ### devise_token_auth
