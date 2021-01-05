@@ -1,6 +1,6 @@
 ## About
 
-- [WondfulEditor](https://k-wonderful-editor.herokuapp.com){:target="\_blank" :rel="noopener noreferrer"} : 記事作成アプリ
+- [WondfulEditor](https://k-wonderful-editor.herokuapp.com): 記事作成アプリ
 
 ### デモの流れ
 
