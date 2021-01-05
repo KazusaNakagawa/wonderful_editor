@@ -1,6 +1,6 @@
 ## About
 
-- WondfulEditor : 記事作成アプリ
+- [WondfulEditor](https://k-wonderful-editor.herokuapp.com): 記事作成アプリ
 
 ### デモの流れ
 
