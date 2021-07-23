@@ -31,6 +31,17 @@
 - 記事の下書き機能
 - マイページ（自分が書いた記事の一覧）
 
+
+## 起動コマンド
+
+```bash
+# API server
+$ bundle exec rails s
+
+# Client server
+$ bin/webpack-dev-server
+```
+
 ## 今後追加する機能
 
 - 記事の検索機能
@@ -56,6 +67,7 @@
 - **Rspec** を使用したテスト実装
 - **endpoint** を意識して実装
 - version 管理
+
 
 ## 今後に向けて
 
