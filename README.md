@@ -2,6 +2,9 @@
 
 - [WondfulEditor](https://k-wonderful-editor.herokuapp.com): 記事作成アプリ
 
+## Test
+[![Lint & Test](https://github.com/KazusaNakagawa/wonderful_editor/actions/workflows/wonderful_editor.yml/badge.svg)](https://github.com/KazusaNakagawa/wonderful_editor/actions/workflows/wonderful_editor.yml)
+
 ### デモの流れ
 
 - 新規登録 > 下書き記事作成 > 一覧で確認 > 投稿 > ログアウト > 一覧から記事確認
